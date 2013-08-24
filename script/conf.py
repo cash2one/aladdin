@@ -10,18 +10,20 @@
 """
 
 #exe
-curl_exe = '../tools/bin/curl.exe'
+curl_exe = '..\\tools\\bin\\curl.exe'
 wget_exe = '..\\tools\\bin\\wget.exe'
 wget_args = ' -nH --cut-dirs=1 '
-nsis_exe = '../tools/nsis/makensisw.exe'
+baidusd_nsis_exe = '..\\tools\\baidusd_nsis\\makensis.exe'
 
 #config files
-packinfo_file = '../info/packinfo.txt'
+packinfo_file = '..\\info\\packinfo.txt'
 
 #folders
-package_folder = '../output/packages/'
-installer_folder = '../output/installers/'
-res_folder = '../res/'
+package_folder = '..\\output\\packages\\'
+installer_folder = '..\\output\\installers\\'
+res_folder = '..\\res\\baidusd'
+task_pool_folder = '..\\taskpool\\'
+task_pool_nsis_folder = '..\\taskpool\\nsis\\'
 
 #ftp config
 ftp_host = 'ftp://10.52.175.51'

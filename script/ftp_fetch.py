@@ -5,7 +5,7 @@
 @desc
     ftp download to local, recursively, use curl.exe
 @change
-
+    init ------------------------------------- 2013.08.24
 """
 
 import sys
@@ -26,7 +26,7 @@ def main(argc, argv):
     parser.add_argument('-nr','--not-recursive', action='store_true', default=False, dest='nrecursive', help='not to download recursively')
     args = parser.parse_args()
     logging.info('remoteUrl' + ' : ' + args.remoteUrl)
-    logging.info('localPath' + ' : ' + args.localPath) 
+    logging.info('localPath' + ' : ' + args.localPath)
     logging.info('resursive' + ' : ' + str(not args.nrecursive))
     
     #do work
