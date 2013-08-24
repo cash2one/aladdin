@@ -1,4 +1,3 @@
-软件名称	安装包名称
 卓大师（刷机专家）	ZhuoDaShi_2.4.2.0
 折子	zhezi_setup_ZHZI
 云呼免费网络电话	CloudCall_cloudcall
