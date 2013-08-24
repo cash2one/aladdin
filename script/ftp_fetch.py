@@ -30,7 +30,7 @@ def main(argc, argv):
     logging.info('resursive' + ' : ' + str(not args.nrecursive))
     
     #do work
-    strR = ' ' if args.nrecursive else ' -r ' 
+    strR = ' ' if args.nrecursive else ' -r '
     command = conf.wget_exe + conf.wget_args + strR + args.remoteUrl + ' -P ' + args.localPath + ' --ftp-user=' + conf.ftp_user + ' --ftp-password=' + conf.ftp_password
     logging.info('command' + ' : ' + command)
     os.system(command)
