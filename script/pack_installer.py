@@ -92,7 +92,10 @@ def main(argc, argv):
     logging.info('inputSoft' + ' : ' + args.inputSoft)
     logging.info('outputDir' + ' : ' + args.outputDir)
     logging.info('packAll' + ' : ' + str(args.packAll))
-    
+
+    if args.inputSoft == '' and (not args.packAll):
+        return
+
     #redelete nsis folder
     command = 'del /Q /S ' + conf.task_pool_nsis_folder
     logging.info(command)
@@ -101,7 +104,7 @@ def main(argc, argv):
     logging.info(command)
     os.system(command)
     
-    if not args.packAll:
+    if (not args.packAll):
         packInstaller(args.inputSoft)
     else:
         fp = open(conf.packinfo_file)
