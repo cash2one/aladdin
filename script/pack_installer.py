@@ -223,28 +223,28 @@ def packInstaller(pkgName):
     command = 'del /Q ' + conf.task_pool_nsis_folder + '\\' + pkgName + '.exe'
     logging.info(command)
     os.system(command)
-    command = 'echo F | xcopy /Y ' + conf.package_folder + pkgName + '\\' + pkgName + '.exe ' + conf.task_pool_nsis_folder + 'softsetup.exe'
+    command = 'copy /Y ' + conf.package_folder + pkgName + '\\' + pkgName + '.exe ' + conf.task_pool_nsis_folder + 'softsetup.exe'
     logging.info(command)
     os.system(command)
     
     command = 'del /Q ' + conf.task_pool_nsis_folder + '\\logo_32.png '
     logging.info(command)
     os.system(command)
-    command = 'echo F | xcopy /Y ' + conf.package_folder + pkgName + '\\logo_32.png ' + conf.task_pool_nsis_folder + 'logo.png'
+    command = 'copy /Y ' + conf.package_folder + pkgName + '\\logo_32.png ' + conf.task_pool_nsis_folder + 'logo.png'
     logging.info(command)
     os.system(command)
     
     command = 'del /Q ' + conf.task_pool_nsis_folder + '\\logo_48.png '
     logging.info(command)
     os.system(command)
-    command = 'echo F | xcopy /Y  ' + conf.package_folder + pkgName + '\\logo_48.png ' + conf.task_pool_nsis_folder + 'logo2.png'
+    command = 'copy /Y  ' + conf.package_folder + pkgName + '\\logo_48.png ' + conf.task_pool_nsis_folder + 'logo2.png'
     logging.info(command)
     os.system(command)
     
     command = 'del /Q ' + conf.task_pool_nsis_folder + '\\setup.ico '
     logging.info(command)
     os.system(command)
-    command = 'echo F | xcopy /Y  ' + conf.ico_folder + pkgName + '.ico ' + conf.task_pool_nsis_folder + 'setup.ico'
+    command = 'copy /Y  ' + conf.ico_folder + pkgName.replace('.','') + '.ico ' + conf.task_pool_nsis_folder + 'setup.ico'
     logging.info(command)
     os.system(command)
     
@@ -268,11 +268,11 @@ def packInstaller(pkgName):
     logging.info(command)
     os.system(command)
     
-    command = 'echo F | xcopy /Y  ' + conf.task_pool_nsis_folder + 'stub\\AladinDemo.exe ' + conf.installer_folder + pkgName + '\\Setup.exe'
+    command = 'copy /Y  ' + conf.task_pool_nsis_folder + 'stub\\AladinDemo.exe ' + conf.installer_folder + pkgName + '\\Setup.exe'
     logging.info(command)
     os.system(command)
     
-    command = 'echo F | xcopy /Y  ' + conf.task_pool_nsis_folder + 'task.xml ' + conf.installer_folder + pkgName + '\\task.xml'
+    command = 'copy /Y  ' + conf.task_pool_nsis_folder + 'task.xml ' + conf.installer_folder + pkgName + '\\task.xml'
     logging.info(command)
     os.system(command)
     
