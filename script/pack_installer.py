@@ -16,12 +16,30 @@ import conf
 import xml.dom.minidom
 import hashlib
 
+def getPkgInfo(pkgName):
+    fp = open(conf.packdetail_file)
+    lines = fp.readlines()
+    fp.close()
+    strName = ''
+    for item in lines:
+        if item.find(pkgName) != -1:
+            return item.split('\t')
+    return []
+
 def generagePkgInfo(pkgName):
+    
+    pkgInfo = getPkgInfo(pkgName)
+    ctx = ''
+    
     doc = xml.dom.minidom.parse(conf.task_pool_nsis_folder + 'task.xml')
     root = doc.documentElement
     
     taskid = doc.createElement('TaskID')
-    taskid.appendChild(doc.createTextNode('1'))
+    if len(pkgInfo) == 0:
+        ctx = '1'
+    else:
+        ctx = pkgInfo[0]
+    taskid.appendChild(doc.createTextNode(ctx))
     root.appendChild(taskid)
 
     filename = doc.createElement('FileName')
@@ -45,23 +63,72 @@ def generagePkgInfo(pkgName):
     root.appendChild(title)
 
     version = doc.createElement('Verision')
-    version.appendChild(doc.createTextNode('1.0'))
+    if len(pkgInfo) == 0:
+        ctx = '1.0'
+    else:
+        ctx = pkgInfo[4]
+    version.appendChild(doc.createTextNode(ctx))
     root.appendChild(version)
 
     size = doc.createElement('Size')
-    size.appendChild(doc.createTextNode('1.0M'))
+    if len(pkgInfo) == 0:
+        ctx = '1.0M'
+    else:
+        nSize = int(pkgInfo[5])
+        if nSize / (1024*1024*1024.0) > 1:
+            ctx = str('%.2f' % (nSize/(1024*1024*1024.0)))
+            ctx += 'G'
+        elif nSize / (1024*1024.0) > 1:
+            ctx = str('%.2f' % (nSize/(1024*1024.0)))
+            ctx += 'M'
+        elif nSize / (1024.0) > 1:
+            ctx = str('%d' % (nSize/(1024.0)))
+            ctx += 'K'
+        else:
+            ctx = str('%d' % nSize)
+            ctx += 'B'
+    size.appendChild(doc.createTextNode(ctx))
     root.appendChild(size)
 
     updateTime = doc.createElement('UpdateTime')
-    updateTime.appendChild(doc.createTextNode('2013-08-25'))
+    if len(pkgInfo) == 0:
+        ctx = '2013-08-25'
+    else:
+        ctx = pkgInfo[6]
+    updateTime.appendChild(doc.createTextNode(ctx))
     root.appendChild(updateTime)
 
     systemRequire = doc.createElement('SystemRequire')
-    systemRequire.appendChild(doc.createTextNode('win8/win7/vista/winxp'))
+    if len(pkgInfo) == 0:
+        ctx = 'win8/win7/vista/win2003/winxp/win2000'
+    else:
+        osType = int(pkgInfo[7])
+        ctx = ''
+        if osType & 0x0020:
+            ctx += 'win8/'
+        if osType & 0x0010:
+            ctx += 'win7/'
+        if osType & 0x0008:
+            ctx += 'vista/'
+        if osType & 0x0004:
+            ctx += 'win2003/'
+        if osType & 0x0002:
+            ctx += 'winxp/'
+        if osType & 0x0001:
+            ctx += 'win2000/'
+        if ctx != '':
+            ctx = ctx[:-1]
+        else:
+            ctx = ''
+    systemRequire.appendChild(doc.createTextNode(ctx))
     root.appendChild(systemRequire)
 
     softURL = doc.createElement('SoftURL')
-    softURL.appendChild(doc.createTextNode('ftp://10.52.175.51:8021/softs/' + pkgName))
+    if len(pkgInfo) == 0:
+        ctx = 'ftp://10.52.175.51:8021/softs/' + pkgName
+    else:
+        ctx = pkgInfo[3]
+    softURL.appendChild(doc.createTextNode(ctx))
     root.appendChild(softURL)
 
     mCalc = hashlib.md5()

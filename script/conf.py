@@ -17,6 +17,7 @@ baidusd_nsis_exe = '..\\tools\\baidusd_nsis\\makensis.exe'
 
 #config files
 packinfo_file = '..\\info\\packinfo.txt'
+packdetail_file = '..\\info\\packdetail.txt'
 
 #folders
 package_folder = '..\\output\\packages\\'
