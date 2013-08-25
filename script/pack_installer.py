@@ -200,7 +200,7 @@ def generagePkgInfo(pkgName):
     root.appendChild(packMd5)
 
     writer = open(conf.task_pool_nsis_folder + 'task.xml', 'w')
-    doc.writexml(writer)
+    doc.writexml(writer, '\n', ' ', '')
     writer.close()
 
 def checkPackage(pkgName):
