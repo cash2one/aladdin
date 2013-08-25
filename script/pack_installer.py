@@ -13,6 +13,128 @@ import os
 import logging
 import argparse
 import conf
+import xml.dom.minidom
+import hashlib
+
+def generagePkgInfo(pkgName):
+    doc = xml.dom.minidom.parse(conf.task_pool_nsis_folder + 'task.xml')
+    root = doc.documentElement
+    
+    taskid = doc.createElement('TaskID')
+    taskid.appendChild(doc.createTextNode('1'))
+    root.appendChild(taskid)
+
+    filename = doc.createElement('FileName')
+    filename.appendChild(doc.createTextNode(pkgName + '.exe'))
+    root.appendChild(filename)
+
+    fp = open(conf.packinfo_file)
+    lines = fp.readlines()
+    fp.close()
+    strName = ''
+    for item in lines:
+        if item.find(pkgName) != -1:
+            strName = item[0:item.find('\t')]
+            break
+    name = doc.createElement('Name')
+    name.appendChild(doc.createTextNode(strName))
+    root.appendChild(name)
+
+    title = doc.createElement('Title')
+    title.appendChild(doc.createTextNode(strName))
+    root.appendChild(title)
+
+    version = doc.createElement('Verision')
+    version.appendChild(doc.createTextNode('1.0'))
+    root.appendChild(version)
+
+    size = doc.createElement('Size')
+    size.appendChild(doc.createTextNode('1.0M'))
+    root.appendChild(size)
+
+    updateTime = doc.createElement('UpdateTime')
+    updateTime.appendChild(doc.createTextNode('2013-08-25'))
+    root.appendChild(updateTime)
+
+    systemRequire = doc.createElement('SystemRequire')
+    systemRequire.appendChild(doc.createTextNode('win8/win7/vista/winxp'))
+    root.appendChild(systemRequire)
+
+    softURL = doc.createElement('SoftURL')
+    softURL.appendChild(doc.createTextNode('ftp://10.52.175.51:8021/softs/' + pkgName))
+    root.appendChild(softURL)
+
+    mCalc = hashlib.md5()
+    inputFile = open(conf.package_folder + pkgName + '\\' + pkgName + '.exe', 'rb')
+    strRead = ''
+    while True:
+        strRead = inputFile.read(8096)
+        if not strRead:
+            break
+        mCalc.update(strRead)
+    inputFile.close()
+    strMd5 = mCalc.hexdigest()
+    softMd5 = doc.createElement('SoftMD5')
+    softMd5.appendChild(doc.createTextNode(strMd5))
+    root.appendChild(softMd5)
+
+    logoUrl = doc.createElement('LogoURL')
+    logoUrl.appendChild(doc.createTextNode('please give me a url'))
+    root.appendChild(logoUrl)
+
+    mCalc = hashlib.md5()
+    inputFile = open(conf.package_folder + pkgName + '\\logo_32.png', 'rb')
+    strRead = ''
+    while True:
+        strRead = inputFile.read(8096)
+        if not strRead:
+            break
+        mCalc.update(strRead)
+    inputFile.close()
+    strMd5 = mCalc.hexdigest()
+    logoMd5 = doc.createElement('LogoMD5')
+    logoMd5.appendChild(doc.createTextNode(strMd5))
+    root.appendChild(logoMd5)
+
+    logoUrl2 = doc.createElement('LogoURL2')
+    logoUrl2.appendChild(doc.createTextNode('please give me a url 2'))
+    root.appendChild(logoUrl2)
+
+    mCalc = hashlib.md5()
+    inputFile = open(conf.package_folder + pkgName + '\\logo_48.png', 'rb')
+    strRead = ''
+    while True:
+        strRead = inputFile.read(8096)
+        if not strRead:
+            break
+        mCalc.update(strRead)
+    inputFile.close()
+    strMd5 = mCalc.hexdigest()
+    logoMd5_2 = doc.createElement('LogoMD52')
+    logoMd5_2.appendChild(doc.createTextNode(strMd5))
+    root.appendChild(logoMd5_2)
+
+    softId = doc.createElement('SoftID')
+    softId.appendChild(doc.createTextNode('1'))
+    root.appendChild(softId)
+
+    mCalc = hashlib.md5()
+    inputFile = open(conf.package_folder + pkgName + '\\' + pkgName + '.exe', 'rb')
+    strRead = ''
+    while True:
+        strRead = inputFile.read(8096)
+        if not strRead:
+            break
+        mCalc.update(strRead)
+    inputFile.close()
+    strMd5 = mCalc.hexdigest()
+    packMd5 = doc.createElement('PackMD5')
+    packMd5.appendChild(doc.createTextNode(strMd5))
+    root.appendChild(packMd5)
+
+    writer = open(conf.task_pool_nsis_folder + 'task.xml', 'w')
+    doc.writexml(writer)
+    writer.close()
 
 def checkPackage(pkgName):
     if not os.path.isdir(conf.package_folder + pkgName):
@@ -58,6 +180,8 @@ def packInstaller(pkgName):
     fp.close()
     logging.info('soft.nsh : ' + nshInfo)
     
+    generagePkgInfo(pkgName)
+
     command = conf.baidusd_nsis_exe + ' /X"SetCompressor /FINAL /SOLID lzma" ' + conf.task_pool_nsis_folder + 'stub\\aladin.nsi'
     logging.info(command)
     os.system(command)
@@ -82,6 +206,10 @@ def packInstaller(pkgName):
 def main(argc, argv):
     #init logging system, it's told logging is threadsafe, so do NOT need to sync
     logging.basicConfig(format = '%(asctime)s - %(levelname)s: %(message)s', level=logging.DEBUG, stream = sys.stdout)
+
+    #utf-8 encoding
+    reload(sys)
+    sys.setdefaultencoding('utf-8')
 
     #parse arguments
     parser = argparse.ArgumentParser()
