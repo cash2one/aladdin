@@ -244,7 +244,7 @@ def packInstaller(pkgName):
     command = 'del /Q ' + conf.task_pool_nsis_folder + '\\setup.ico '
     logging.info(command)
     os.system(command)
-    command = 'echo F | xcopy /Y  ' + conf.package_folder + pkgName + '\\setup.ico ' + conf.task_pool_nsis_folder + 'setup.ico'
+    command = 'echo F | xcopy /Y  ' + conf.ico_folder + pkgName + '.ico ' + conf.task_pool_nsis_folder + 'setup.ico'
     logging.info(command)
     os.system(command)
     

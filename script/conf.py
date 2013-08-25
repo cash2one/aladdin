@@ -25,6 +25,7 @@ installer_folder = '..\\output\\installers\\'
 res_folder = '..\\res\\baidusd'
 task_pool_folder = '..\\taskpool\\'
 task_pool_nsis_folder = '..\\taskpool\\nsis\\'
+ico_folder = '..\\output\\ico\\'
 
 #ftp config
 ftp_host = 'ftp://10.52.175.51'
