@@ -220,7 +220,7 @@ def checkPackage(pkgName):
         return True
 
 def packInstaller(pkgName):
-    command = 'del /Q ' + conf.task_pool_nsis_folder + '\\' + pkgName + '.exe'
+    command = 'del /Q ' + conf.task_pool_nsis_folder + '\\softsetup.exe'
     logging.info(command)
     os.system(command)
     command = 'copy /Y ' + conf.package_folder + pkgName + '\\' + pkgName + '.exe ' + conf.task_pool_nsis_folder + 'softsetup.exe'

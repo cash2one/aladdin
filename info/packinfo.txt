@@ -1,4 +1,4 @@
-卓大师（刷机专家）	ZhuoDaShi_2.4.2.0
+﻿卓大师（刷机专家）	ZhuoDaShi_2.4.2.0
 折子	zhezi_setup_ZHZI
 云呼免费网络电话	CloudCall_cloudcall
 有信	UXinClient_2.3.0.60
@@ -93,3 +93,19 @@ D3魔盒	D3Box_1.8
 91手机助手	91assistant_v3.3.5.1037
 9158虚拟视频	9158VCamSetup_5.1.0.3
 迅雷	Thunder_dl_7.9.8.4550
+飞信	Fetion2013August
+同花顺	THS_v8.30.43_20130814
+IP加速器	IPmana_3.0.2.16
+9158多人视频聊天	chat
+刷机大师	RomasterSetup_3.2.2.0
+文件夹加密超级大师	fse_16.6.9.0
+傲游云浏览器	mx4.1.2.3000cn
+悟空识字	Wukongshizi_2.0.3.9
+同步助手	Tongbu2_2.0.6.0
+Firefox火狐浏览器	Firefox-full-latest-23.0.1.4974
+百度Hi	BaiduHi_4.2_Beta
+百度浏览器	bdbrowser_setup-bdie-4_7_0_1909-4501
+百度影音	BaiduPlayer
+百度音乐（原千千静听）	BaiduMusic
+百度工具栏	Baidu-Toolbar_2.3.0.19
+百度输入法	BaiduPinyinSetup-2_5_2_291
