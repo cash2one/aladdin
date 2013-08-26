@@ -26,7 +26,7 @@ def getPkgInfo(pkgName):
             return item.split('\t')
     return []
 
-def generagePkgInfo(pkgName):
+def generagePkgInfo(pkgName, bindSoft):
     
     pkgInfo = getPkgInfo(pkgName)
     ctx = ''
@@ -45,8 +45,13 @@ def generagePkgInfo(pkgName):
     filename = doc.createElement('FileName')
     filename.appendChild(doc.createTextNode(pkgName + '.exe'))
     root.appendChild(filename)
-
-    fp = open(conf.packinfo_file)
+    
+    packinfoFile = ''
+    if bindSoft.lower() == 'baidusd':
+        packinfoFile = conf.baidusd_packinfo_file
+    elif bindSoft.lower() == 'qqmgr':
+        packinfoFile = conf.qqmgr_packinfo_file
+    fp = open(packinfoFile)
     lines = fp.readlines()
     fp.close()
     strName = ''
@@ -219,7 +224,7 @@ def checkPackage(pkgName):
     else:
         return True
 
-def packInstaller(pkgName):
+def packInstaller(pkgName, bindSoft):
     command = 'del /Q ' + conf.task_pool_nsis_folder + '\\softsetup.exe'
     logging.info(command)
     os.system(command)
@@ -254,9 +259,14 @@ def packInstaller(pkgName):
     fp.close()
     logging.info('soft.nsh : ' + nshInfo)
     
-    generagePkgInfo(pkgName)
+    generagePkgInfo(pkgName, bindSoft)
 
-    command = conf.baidusd_nsis_exe + ' /X"SetCompressor /FINAL /SOLID lzma" ' + conf.task_pool_nsis_folder + 'stub\\aladin.nsi'
+    nsis_exe = ''
+    if bindSoft == 'baidusd':
+        nsis_exe = conf.baidusd_nsis_exe
+    elif bindSoft == 'qqmgr':
+        nsis_exe = conf.qqmgr_nsis_exe
+    command = nsis_exe + ' /X"SetCompressor /FINAL /SOLID lzma" ' + conf.task_pool_nsis_folder + 'stub\\aladin.nsi'
     logging.info(command)
     os.system(command)
     
@@ -287,29 +297,43 @@ def main(argc, argv):
 
     #parse arguments
     parser = argparse.ArgumentParser()
-    parser.add_argument('-i','--inputSoft', action='store', dest='inputSoft', default='', help='third party software name')
-    parser.add_argument('-l','--outputDir', action='store', default=conf.installer_folder, dest='outputDir', help='binded installer folder, must be folder')
-    parser.add_argument('-a','--packAll', action='store_true', default=False, dest='packAll', help='whether to pack all installers')
+    parser.add_argument('-i', '--inputSoft', action='store', dest='inputSoft', default='', help='third party software name')
+    parser.add_argument('-l', '--outputDir', action='store', default=conf.installer_folder, dest='outputDir', help='binded installer folder, must be folder')
+    parser.add_argument('-b', '--bindSoft', action='store', dest='bindSoft', default='baidusd', help='binded soft, baidusd[default] or qqmgr')
+    parser.add_argument('-a', '--packAll', action='store_true', default=False, dest='packAll', help='whether to pack all installers')
+    
     args = parser.parse_args()
+    
     logging.info('inputSoft' + ' : ' + args.inputSoft)
     logging.info('outputDir' + ' : ' + args.outputDir)
+    logging.info('bindSoft' + ' : ' + args.bindSoft)
     logging.info('packAll' + ' : ' + str(args.packAll))
 
     if args.inputSoft == '' and (not args.packAll):
         return
 
+    packinfoFile = ''
+    resFolder = ''
+    bindSoft = args.bindSoft.lower()
+    if bindSoft.lower() == 'baidusd':
+        packinfoFile = conf.baidusd_packinfo_file
+        resFolder = conf.baidusd_res_folder
+    elif bindSoft.lower() == 'qqmgr':
+        packinfoFile = conf.qqmgr_packinfo_file
+        resFolder = conf.qqmgr_res_folder
+
     #redelete nsis folder
     command = 'del /Q /S ' + conf.task_pool_nsis_folder
     logging.info(command)
     os.system(command)
-    command = 'xcopy /Y /E /S ' + conf.res_folder + ' ' + conf.task_pool_nsis_folder
+    command = 'xcopy /Y /E /S ' + resFolder + ' ' + conf.task_pool_nsis_folder
     logging.info(command)
     os.system(command)
     
     if (not args.packAll):
-        packInstaller(args.inputSoft)
+        packInstaller(args.inputSoft, bindSoft)
     else:
-        fp = open(conf.packinfo_file)
+        fp = open(packinfoFile)
         lines = fp.readlines()
         fp.close()
         for item in lines:
@@ -317,7 +341,7 @@ def main(argc, argv):
             pkgName = item[item.find('\t')+1:-1]
             if checkPackage(pkgName):
                 logging.info('packing ' + pkgName + ' ... ')
-                packInstaller(pkgName)
+                packInstaller(pkgName, bindSoft)
             else:
                 logging.error('check package ' + pkgName + ' failed')
                 continue

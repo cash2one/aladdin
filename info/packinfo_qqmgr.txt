@@ -1,0 +1,7 @@
+软件名称	安装包名称
+QQ	QQ2013SP1
+QQ音乐	QQMusic_Setup_92_923
+QQ浏览器	QQBrowser_Setup_13123
+腾讯手机管家PC版	QQPhoneManager_2.0.704.3090
+QT语音	QT3.12.9.8830
+

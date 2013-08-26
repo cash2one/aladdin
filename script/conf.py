@@ -14,15 +14,18 @@ curl_exe = '..\\tools\\bin\\curl.exe'
 wget_exe = '..\\tools\\bin\\wget.exe'
 wget_args = ' -nH --cut-dirs=1 '
 baidusd_nsis_exe = '..\\tools\\baidusd_nsis\\makensis.exe'
+qqmgr_nsis_exe = '..\\tools\\qqmgr_nsis\\makensis.exe'
 
 #config files
-packinfo_file = '..\\info\\packinfo.txt'
+baidusd_packinfo_file = '..\\info\\packinfo_baidusd.txt'
+qqmgr_packinfo_file = '..\\info\\packinfo_qqmgr.txt'
 packdetail_file = '..\\info\\packdetail.txt'
 
 #folders
 package_folder = '..\\output\\packages\\'
 installer_folder = '..\\output\\installers\\'
-res_folder = '..\\res\\baidusd'
+baidusd_res_folder = '..\\res\\baidusd'
+qqmgr_res_folder = '..\\res\\qqmgr'
 task_pool_folder = '..\\taskpool\\'
 task_pool_nsis_folder = '..\\taskpool\\nsis\\'
 ico_folder = '..\\output\\ico\\'
