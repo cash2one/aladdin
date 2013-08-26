@@ -1,0 +1,45 @@
+body {
+	font-family: Tahoma, Verdana, Arial, Helvetica, sans-serif;
+	font-size: 10pt;
+}
+p, li {
+	font-size: 10pt;
+}
+h1 {
+	font-size: 170%;
+}
+h2 {
+	font-size: 150%;
+}
+h3 {
+	font-size: 130%;
+}
+h4 {
+	font-size: 120%;
+}
+pre {
+	font-family: Fixedsys, Courier New, Courier, mono;
+	background-color: #F7F7F7;
+	padding: 1px;
+}
+pre b {
+	text-decoration: underline;
+}
+a {
+	color: #567599;
+	text-decoration: none;
+}
+a:hover {
+	background-color: #F4F4F4;
+	color: #303030;
+	text-decoration: underline;
+}
+.btitle {
+	color: #000000;
+	text-decoration: none;
+}
+.btitle:hover {
+	background-color: #F4F4F4;
+	color: #000000;
+	text-decoration: underline;
+}
