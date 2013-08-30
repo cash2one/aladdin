@@ -1,0 +1,12 @@
+}q(Ulzmaq(cSCons.Node.FS
+BuildInfo
+qoq}q(UbsigqU ebeb6d81b5ef58784c32281d2654e2f6qU	bimplicitq]q	Ubdependsq
+]qUbdependsigsq]qUbactsigqU c20dc44955e14e60e11b55382d70595aqUbimplicitsigsq]qUbactqU installFunc(target, source, env)qUbsourcesq]qU%build\release\stub_lzma\stub_lzma.exeqaUbsourcesigsq]qU 3fa75fb9a76c6f34e2cf9c2b346de5fcqaubUbzip2q(hoq}q(hU b4bbbe6b4cc030eff073e46f7c185f30qh]qh
+]qh]q hU c20dc44955e14e60e11b55382d70595aq!h]q"hU installFunc(target, source, env)q#h]q$U'build\release\stub_bzip2\stub_bzip2.exeq%ah]q&U 777421eb898d47c96d5f8006ff4ac0dbq'aubUuninstq((hoq)}q*(hU e2ada3cc3f0a1e8932fa83148abe59daq+h]q,h
+]q-h]q.hU c20dc44955e14e60e11b55382d70595aq/h]q0hU installFunc(target, source, env)q1h]q2USource\exehead\uninst.icoq3ah]q4U 4023b710d3b47d9101c27f5da22aa5efq5aubU
+zlib_solidq6(hoq7}q8(hU c877c38f9d8c1fc310ee663b228cc653q9h]q:h
+]q;h]q<hU c20dc44955e14e60e11b55382d70595aq=h]q>hU installFunc(target, source, env)q?h]q@U+build\release\stub_zlib_solid\stub_zlib.exeqAah]qBU 8841e9aa9177271e9221730f7e809b11qCaubUzlibqD(hoqE}qF(hU 542a99b20f6e2a3604ee70af50996328qGh]qHh
+]qIh]qJhU c20dc44955e14e60e11b55382d70595aqKh]qLhU installFunc(target, source, env)qMh]qNU%build\release\stub_zlib\stub_zlib.exeqOah]qPU eea515e2b8d4e8c76ecf4bc04b0015abqQaubUbzip2_solidqR(hoqS}qT(hU bb9f216e6b427d6fa7dadcd75fbe947cqUh]qVh
+]qWh]qXhU c20dc44955e14e60e11b55382d70595aqYh]qZhU installFunc(target, source, env)q[h]q\U-build\release\stub_bzip2_solid\stub_bzip2.exeq]ah]q^U ffa54bd879d06e857939f2930c534b49q_aubU
+lzma_solidq`(hoqa}qb(hU 7c6c9c8e59fe4690c9a6c46b4d234a45qch]qdh
+]qeh]qfhU c20dc44955e14e60e11b55382d70595aqgh]qhhU installFunc(target, source, env)qih]qjU+build\release\stub_lzma_solid\stub_lzma.exeqkah]qlU cec295300ec22996e87270fa740544b1qmaubu.
