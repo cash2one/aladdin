@@ -219,13 +219,14 @@ def main(argc, argv):
 
     #parse arguments
     parser = argparse.ArgumentParser()
-    parser.add_argument('-f', '--xml-file', action='store', default='..\\info\\pack_today_1.xml', dest='xmlFile', help='hao123 xml file location')
+    parser.add_argument('-f', '--xml-file', action='store', default='..\\info\\pack_today_1.xml', dest='xmlFile', help='hao123 xml file location, second considered')
     parser.add_argument('-d', '--auto-download', action='store_true', default=False, dest='bDownload', help='auto download original packages')
     parser.add_argument('-b', '--auto-build', action='store_true', default=False, dest='bBuild', help='auto build packages')
     parser.add_argument('-t', '--bind-type', action='store', default='baidusd;baidusd_nobind', dest='bindType', help='bind type')
     parser.add_argument('-F', '--force-update', action='store_true', default=False, dest='bForce', help='force updating everything')
     parser.add_argument('-a', '--analyze-all', action='store_true', default=False, dest='bAll', help='analyze all tasks')
     parser.add_argument('-p', '--packinfo-file', action='store', default='', dest='packInfoFile', help='packlist maintain list file')
+    parser.add_argument('-s', '--soft-id', action='store', default='', dest='softId', help='use manual softid list, first considered')
     args = parser.parse_args()
     logging.info('xml-file : ' + args.xmlFile)
     logging.info('auto-download : ' + str(args.bDownload))
@@ -233,6 +234,8 @@ def main(argc, argv):
     logging.info('bind-type : ' + args.bindType)
     logging.info('force-update : ' + str(args.bForce))
     logging.info('analyze-all : ' + str(args.bAll))
+    logging.info('packinfo-file : ' + args.packInfoFile)
+    logging.info('soft-id : ' + args.softId)
     
     error_summary = []
     
@@ -252,6 +255,12 @@ def main(argc, argv):
         logging.error(e)
         return
     
+    #manual softid
+    if args.softId != '':
+        aladdin_maintain_list = []
+        for item in args.softId.split(';'):
+            aladdin_maintain_list.append(item)
+    
     #do it
     #1.update all hao123softid single xmls
     try:
@@ -265,11 +274,11 @@ def main(argc, argv):
             if len(nsoftid) != 1:
                 raise SoftIDError()
             softid = nsoftid[0].firstChild.wholeText
-            logging.info('parsing softid %s' % softid)
+            #logging.info('parsing softid %s' % softid)
             
             #if not in maintain list, ignore
             if (softid not in aladdin_maintain_list) and (not args.bAll):
-                logging.info('%s is not in the maintain list, ignored' % softid)
+                #logging.info('%s is not in the maintain list, ignored' % softid)
                 continue
             
             #if force update, delete the xml file first
