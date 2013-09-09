@@ -6,29 +6,46 @@
     configuration file
 @change
     init --------------------------------- 2013.08.24
-    
+    add aladdin support ------------------ 2013.09.06
 """
 
 #exe
 curl_exe = '..\\tools\\bin\\curl.exe'
 wget_exe = '..\\tools\\bin\\wget.exe'
 wget_args = ' -nH --cut-dirs=1 '
-baidusd_nsis_exe = '..\\tools\\baidusd_nsis\\makensis.exe'
-qqmgr_nsis_exe = '..\\tools\\qqmgr_nsis\\makensis.exe'
+
+baidusd_nsis_exe = '..\\tools\\bdnsis\\makensis.exe'
+baidusd_nsis_nobind_exe = '..\\tools\\bdnsis_nobind\\makensis.exe'
+qqmgr_nsis_exe = '..\\tools\\qqnsis\\makensis.exe'
+qqmgr_nsis_nobind_exe = '..\\tools\\qqnsis_nobind\\makensis.exe'
+
+extract_icon_exe = '..\\tools\\bin\\extracticon.exe'
 
 #config files
 baidusd_packinfo_file = '..\\info\\packinfo_baidusd.txt'
 qqmgr_packinfo_file = '..\\info\\packinfo_qqmgr.txt'
 packdetail_file = '..\\info\\packdetail.txt'
 
+aladdin_xml_full = '..\\info\\pack_all_1.xml'
+aladdin_xml_daily = '..\\info\\pack_today_1.xml'
+
+packinfo_aladdin_file = '..\\info\\packinfo_aladdin.txt'
+
 #folders
 package_folder = '..\\output\\packages\\'
+aladdin_package_folder = '..\\output\\aladdin\\packages\\'
 installer_folder = '..\\output\\installers\\'
+aladdin_installer_folder= '..\\output\\aladdin\\installers\\'
+ico_folder = '..\\output\\ico\\'
+aladdin_ico_folder = '..\\output\\aladdin\\ico\\'
+
 baidusd_res_folder = '..\\res\\baidusd'
 qqmgr_res_folder = '..\\res\\qqmgr'
+nobind_res_folder = '..\\res\\nobind'
+
 task_pool_folder = '..\\taskpool\\'
 task_pool_nsis_folder = '..\\taskpool\\nsis\\'
-ico_folder = '..\\output\\ico\\'
+
 
 #ftp config
 ftp_host = 'ftp://10.52.175.51'
