@@ -18,7 +18,7 @@ import base64
 import hashlib
 import io
 import rename_package
-import 
+import sign
 
 class SoftIDError(Exception):
     def __str__(self):
@@ -46,7 +46,7 @@ def buildPackage(softid, type):
         baidusd, qqmgr, nobind
     ''' 
     
-    #redelete nsis folder and copy
+    #delete nsis folder
     command = 'del /Q /S ' + conf.task_pool_nsis_folder
     logging.info(command)
     os.system(command.encode(sys.getfilesystemencoding()))
@@ -121,6 +121,10 @@ def buildPackage(softid, type):
         
         #copy to archives
         if item.lower() == 'baidusd_nobind' or item.lower() == 'qqmgr_nobind':
+            #delete output installer folder
+            command = 'del /Q /S ' + conf.aladdin_installer_folder + 'unbind\\' + softid
+            logging.info(command)
+            os.system(command.encode(sys.getfilesystemencoding()))
             #init single task installer folder
             if not os.path.isdir(conf.aladdin_installer_folder + 'unbind\\' + softid):
                 os.mkdir(conf.aladdin_installer_folder + 'unbind\\' + softid)
@@ -131,6 +135,10 @@ def buildPackage(softid, type):
             logging.info(command)
             os.system(command.encode(sys.getfilesystemencoding()))
         elif item.lower() == 'baidusd' or item.lower() == 'qqmgr':
+            #delete output installer folder
+            command = 'del /Q /S ' + conf.aladdin_installer_folder + 'bind\\' + softid
+            logging.info(command)
+            os.system(command.encode(sys.getfilesystemencoding()))
             #init single task installer folder
             if not os.path.isdir(conf.aladdin_installer_folder + 'bind\\' + softid):
                 os.mkdir(conf.aladdin_installer_folder + 'bind\\' + softid)
@@ -141,6 +149,10 @@ def buildPackage(softid, type):
             logging.info(command)
             os.system(command.encode(sys.getfilesystemencoding()))
             
+            #delete output installer folder
+            command = 'del /Q /S ' + conf.aladdin_installer_folder + 'bind1\\' + softid
+            logging.info(command)
+            os.system(command.encode(sys.getfilesystemencoding()))
             #init single task installer folder
             if not os.path.isdir(conf.aladdin_installer_folder + 'bind1\\' + softid):
                 os.mkdir(conf.aladdin_installer_folder + 'bind1\\' + softid)
@@ -151,6 +163,10 @@ def buildPackage(softid, type):
             logging.info(command)
             os.system(command.encode(sys.getfilesystemencoding()))
             
+            #delete output installer folder
+            command = 'del /Q /S ' + conf.aladdin_installer_folder + 'bind2\\' + softid
+            logging.info(command)
+            os.system(command.encode(sys.getfilesystemencoding()))
             #init single task installer folder
             if not os.path.isdir(conf.aladdin_installer_folder + 'bind2\\' + softid):
                 os.mkdir(conf.aladdin_installer_folder + 'bind2\\' + softid)
@@ -162,9 +178,13 @@ def buildPackage(softid, type):
             os.system(command.encode(sys.getfilesystemencoding()))
         
         #copy src packages
+        #delete output installer folder
+        command = 'del /Q /S ' + conf.aladdin_installer_folder + 'src\\' + softid
+        logging.info(command)
+        os.system(command.encode(sys.getfilesystemencoding()))
         #init single task installer folder
-            if not os.path.isdir(conf.aladdin_installer_folder + 'src\\' + softid):
-                os.mkdir(conf.aladdin_installer_folder + 'src\\' + softid)
+        if not os.path.isdir(conf.aladdin_installer_folder + 'src\\' + softid):
+            os.mkdir(conf.aladdin_installer_folder + 'src\\' + softid)
         command = 'copy /Y ' + conf.task_pool_nsis_folder + 'task.xml ' + conf.aladdin_installer_folder + 'src\\' + softid + '\\task.xml'
         logging.info(command)
         os.system(command.encode(sys.getfilesystemencoding()))
@@ -173,10 +193,21 @@ def buildPackage(softid, type):
         os.system(command.encode(sys.getfilesystemencoding()))
     
 def signPackage(softid, type):
-    
+    for item in type.split(';'):
+        if item.lower() == 'baidusd_nobind' or item.lower() == 'qqmgr_nobind':
+            sign.main(3, ['sign.py', 'bdkv', conf.aladdin_installer_folder + 'unbind\\' + softid + '\\'])
+        elif item.lower() == 'baidusd' or item.lower() == 'qqmgr':
+            sign.main(3, ['sign.py', 'bdkv', conf.aladdin_installer_folder + 'bind1\\' + softid + '\\'])
+            sign.main(3, ['sign.py', 'bdkv', conf.aladdin_installer_folder + 'bind2\\' + softid + '\\'])
     
 def renamePackage(softid, type):
-    
+    for item in type.split(';'):
+        if item.lower() == 'baidusd_nobind' or item.lower() == 'qqmgr_nobind':
+            rename_package.FileOperation(conf.aladdin_installer_folder + 'unbind\\' + softid + '\\', rename_package.renameExe, '*.xml')
+        elif item.lower() == 'baidusd' or item.lower() == 'qqmgr':
+            rename_package.FileOperation(conf.aladdin_installer_folder + 'bind1\\' + softid + '\\', rename_package.renameExe, '*.xml')
+            rename_package.FileOperation(conf.aladdin_installer_folder + 'bind2\\' + softid + '\\', rename_package.renameExe, '*.xml')
+            rename_package.FileOperation(conf.aladdin_installer_folder + 'src\\' + softid + '\\', rename_package.renameExe, '*.xml')
     
 def main(argc, argv):
     #set sysencoding to utf-8
@@ -214,7 +245,7 @@ def main(argc, argv):
     try:
         bdlist_file = open(packInfoFile, 'r')
         for line in bdlist_file.readlines():
-            bdsd_maintain_list.append(line.strip('\r\n \t'))
+            aladdin_maintain_list.append(line.strip('\r\n \t'))
         bdlist_file.close()
     except Exception, e:
         logging.error('error when get softid maintain list')
@@ -467,8 +498,8 @@ def main(argc, argv):
                 #build specific package
                 if args.bBuild:
                     buildPackage(softid, args.bindType)
-                    signPackage(softid, args.bindType)
-                    renamePackage(softid, args.bindType)
+                    signPackage(str(softid), args.bindType)
+                    renamePackage(str(softid), args.bindType)
                 
             else:
                 if args.bDownload:

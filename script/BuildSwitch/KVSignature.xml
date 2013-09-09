@@ -1,0 +1,5 @@
+<?xml version="1.0" ?><conf>
+	<item sign="0" type="baidu_cn" verify="0"/>
+	<item sign="1" type="baidu_bj_netcom" verify="0"/>
+	<item sign="0" type="baidu_jp" verify="0"/>
+</conf>
