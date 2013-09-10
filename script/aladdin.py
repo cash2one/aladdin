@@ -208,45 +208,18 @@ def renamePackage(softid, type):
             rename_package.FileOperation(conf.aladdin_installer_folder + 'bind1\\' + softid + '\\', rename_package.renameExe, '*.xml')
             rename_package.FileOperation(conf.aladdin_installer_folder + 'bind2\\' + softid + '\\', rename_package.renameExe, '*.xml')
             rename_package.FileOperation(conf.aladdin_installer_folder + 'src\\' + softid + '\\', rename_package.renameExe, '*.xml')
-    
-def main(argc, argv):
-    #set sysencoding to utf-8
-    reload(sys)
-    sys.setdefaultencoding('utf-8')
-    
-    #init logging system, it's told logging is threadsafe, so do NOT need to sync
-    logging.basicConfig(format = '%(asctime)s - %(levelname)s: %(message)s', level=logging.DEBUG, stream = sys.stdout)
 
-    #parse arguments
-    parser = argparse.ArgumentParser()
-    parser.add_argument('-f', '--xml-file', action='store', default='..\\info\\pack_today_1.xml', dest='xmlFile', help='hao123 xml file location, second considered')
-    parser.add_argument('-d', '--auto-download', action='store_true', default=False, dest='bDownload', help='auto download original packages')
-    parser.add_argument('-b', '--auto-build', action='store_true', default=False, dest='bBuild', help='auto build packages')
-    parser.add_argument('-t', '--bind-type', action='store', default='baidusd;baidusd_nobind', dest='bindType', help='bind type')
-    parser.add_argument('-F', '--force-update', action='store_true', default=False, dest='bForce', help='force updating everything')
-    parser.add_argument('-a', '--analyze-all', action='store_true', default=False, dest='bAll', help='analyze all tasks')
-    parser.add_argument('-p', '--packinfo-file', action='store', default='', dest='packInfoFile', help='packlist maintain list file')
-    parser.add_argument('-s', '--soft-id', action='store', default='', dest='softId', help='use manual softid list, first considered')
-    args = parser.parse_args()
-    logging.info('xml-file : ' + args.xmlFile)
-    logging.info('auto-download : ' + str(args.bDownload))
-    logging.info('auto-build : ' + str(args.bBuild))
-    logging.info('bind-type : ' + args.bindType)
-    logging.info('force-update : ' + str(args.bForce))
-    logging.info('analyze-all : ' + str(args.bAll))
-    logging.info('packinfo-file : ' + args.packInfoFile)
-    logging.info('soft-id : ' + args.softId)
-    
+def buildAladdinPackage(xmlFile, bDownload, bBuild, bindType, bForce, bAll, packInfoFile, o_softId):
     error_summary = []
     
     #get all maintain list
-    packInfoFile = conf.packinfo_aladdin_file
-    if args.packInfoFile != '':
-        packInfoFile = args.packInfoFile
+    i_packInfoFile = conf.packinfo_aladdin_file
+    if packInfoFile != '':
+        i_packInfoFile = packInfoFile
     
     aladdin_maintain_list = []
     try:
-        bdlist_file = open(packInfoFile, 'r')
+        bdlist_file = open(i_packInfoFile, 'r')
         for line in bdlist_file.readlines():
             aladdin_maintain_list.append(line.strip('\r\n \t'))
         bdlist_file.close()
@@ -256,15 +229,20 @@ def main(argc, argv):
         return
     
     #manual softid
-    if args.softId != '':
+    if o_softId != '':
         aladdin_maintain_list = []
-        for item in args.softId.split(';'):
+        for item in o_softId.split(';'):
             aladdin_maintain_list.append(item)
+    
+    #xml file to anylize
+    xmlFile = conf.aladdin_xml_full
+    if xmlFile != '':
+        i_xmlFile = xmlFile
     
     #do it
     #1.update all hao123softid single xmls
     try:
-        dom = xml.dom.minidom.parse(conf.aladdin_xml_full)
+        dom = xml.dom.minidom.parse(i_xmlFile)
         root = dom.documentElement
         for node in root.childNodes:
             if node.nodeType != node.ELEMENT_NODE:
@@ -274,15 +252,16 @@ def main(argc, argv):
             if len(nsoftid) != 1:
                 raise SoftIDError()
             softid = nsoftid[0].firstChild.wholeText
-            #logging.info('parsing softid %s' % softid)
             
             #if not in maintain list, ignore
-            if (softid not in aladdin_maintain_list) and (not args.bAll):
+            if (softid not in aladdin_maintain_list) and (not bAll):
                 #logging.info('%s is not in the maintain list, ignored' % softid)
                 continue
             
+            logging.info('parsing softid %s' % softid)
+            
             #if force update, delete the xml file first
-            if args.bForce:
+            if bForce:
                 command = 'del /Q ' + conf.aladdin_package_folder + softid + '\\' + softid + '.xml'
                 os.system(command.encode(sys.getfilesystemencoding()))
             
@@ -322,13 +301,13 @@ def main(argc, argv):
                 tfilename = troot.getElementsByTagName('FileName')[0]
                 if tfilename.childNodes[0].data != filename:
                     bUpdate = True
-                    tfilename.appendChild(tdom.createTextNode(filename))
+                    tfilename.childNodes[0].data = filename
                 else:
                     pass
                 tsofturl = troot.getElementsByTagName('SoftURL')[0]
                 if tsofturl.childNodes[0].data != downloadLink:
                     bUpdate = True
-                    tsofturl.appendChild(tdom.createTextNode(downloadLink))
+                    tsofturl.childNodes[0].data = downloadLink
                 else:
                     pass
             else:
@@ -346,7 +325,7 @@ def main(argc, argv):
                 tname = troot.getElementsByTagName('Name')[0]
                 if tname.childNodes[0].data != name:
                     bUpdate = True
-                    tname.appendChild(tdom.createTextNdoe(name))
+                    tname.childNodes[0].data = name
                 else:
                     pass
             else:
@@ -361,7 +340,7 @@ def main(argc, argv):
                 ttitle = troot.getElementsByTagName('Title')[0]
                 if ttitle.childNodes[0].data != title:
                     bUpdate = True
-                    ttitle.appendChild(tdom.createTextNdoe(title))
+                    ttitle.childNodes[0].data = title
                 else:
                     pass
             else:
@@ -376,7 +355,7 @@ def main(argc, argv):
                 tversion = troot.getElementsByTagName('Version')[0]
                 if tversion.childNodes[0].data != version:
                     bUpdate = True
-                    tversion.appendChild(tdom.createTextNdoe(version))
+                    tversion.childNodes[0].data = version
                 else:
                     pass
             else:
@@ -391,7 +370,7 @@ def main(argc, argv):
                 tsize = troot.getElementsByTagName('Size')[0]
                 if tsize.childNodes[0].data != size:
                     bUpdate = True
-                    tsize.appendChild(tdom.createTextNdoe(size))
+                    tsize.childNodes[0].data = size
                 else:
                     pass
             else:
@@ -406,7 +385,7 @@ def main(argc, argv):
                 tupdateTime = troot.getElementsByTagName('UpdateTime')[0]
                 if tupdateTime.childNodes[0].data != updateTime:
                     bUpdate = True
-                    tupdateTime.appendChild(tdom.createTextNdoe(updateTime))
+                    tupdateTime.childNodes[0].data = updateTime
                 else:
                     pass
             else:
@@ -422,7 +401,7 @@ def main(argc, argv):
                 tsystemRequire = troot.getElementsByTagName('SystemRequire')[0]
                 if tsystemRequire.childNodes[0].data != systemRequire:
                     bUpdate = True
-                    tsystemRequire.appendChild(tdom.createTextNdoe(update))
+                    tsystemRequire.childNodes[0].data = update
                 else:
                     pass
             else:
@@ -448,7 +427,7 @@ def main(argc, argv):
                 ticon = troot.getElementsByTagName('LogoUrl')[0]
                 if ticon.childNodes[0].data != iconAddr:
                     bUpdate = True
-                    ticon.appendChild(tdom.createTextNdoe(iconAddr))
+                    ticon.childNodes[0].data = iconAddr
                 else:
                     pass
             else:
@@ -487,7 +466,7 @@ def main(argc, argv):
             #if bUpdate, do some real work
             if bUpdate:
                 #if bDownload is set, also download soft、ico, and update softmd5、logomd5、softid
-                if args.bDownload:
+                if bDownload:
                     #soft
                     command = conf.wget_exe + ' ' + downloadLink + ' -O ' + conf.aladdin_package_folder + softid + '\\' + filename
                     os.system(command.encode(sys.getfilesystemencoding()))
@@ -501,17 +480,17 @@ def main(argc, argv):
                 
                 #save to xml
                 writer = open(taskxml_file, 'w')
-                tdom.writexml(writer, '\n', ' ', '')
+                tdom.writexml(writer)
                 writer.close()
                 
                 #build specific package
-                if args.bBuild:
-                    buildPackage(softid, args.bindType)
-                    signPackage(str(softid), args.bindType)
-                    renamePackage(str(softid), args.bindType)
+                if bBuild:
+                    buildPackage(softid, bindType)
+                    signPackage(str(softid), bindType)
+                    renamePackage(str(softid), bindType)
                 
             else:
-                if args.bDownload:
+                if bDownload:
                     if not os.path.isfile(conf.aladdin_package_folder + softid + '\\' + filename):
                         #soft
                         command = conf.wget_exe + ' ' + downloadLink + ' -O ' + conf.aladdin_package_folder + softid + '\\' + filename
@@ -525,9 +504,40 @@ def main(argc, argv):
         logging.error('error occers while parsing aladdin full xml')
         logging.error(e)
         return
+
     
-    #2.
+def main(argc, argv):
+    #set sysencoding to utf-8
+    reload(sys)
+    sys.setdefaultencoding('utf-8')
     
+    #init logging system, it's told logging is threadsafe, so do NOT need to sync
+    logging.basicConfig(format = '%(asctime)s - %(levelname)s: %(message)s', level=logging.DEBUG, stream = sys.stdout)
+
+    #parse arguments
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-f', '--xml-file', action='store', default='..\\info\\pack_today_1.xml', dest='xmlFile', help='hao123 xml file location, second considered')
+    parser.add_argument('-d', '--auto-download', action='store_true', default=False, dest='bDownload', help='auto download original packages')
+    parser.add_argument('-b', '--auto-build', action='store_true', default=False, dest='bBuild', help='auto build packages')
+    parser.add_argument('-t', '--bind-type', action='store', default='baidusd;baidusd_nobind', dest='bindType', help='bind type')
+    parser.add_argument('-F', '--force-update', action='store_true', default=False, dest='bForce', help='force updating everything')
+    parser.add_argument('-a', '--analyze-all', action='store_true', default=False, dest='bAll', help='analyze all tasks')
+    parser.add_argument('-p', '--packinfo-file', action='store', default='', dest='packInfoFile', help='packlist maintain list file')
+    parser.add_argument('-s', '--soft-id', action='store', default='', dest='softId', help='use manual softid list, first considered')
+    args = parser.parse_args()
+    logging.info('-----------------------------------------')
+    logging.info('xml-file : ' + args.xmlFile)
+    logging.info('auto-download : ' + str(args.bDownload))
+    logging.info('auto-build : ' + str(args.bBuild))
+    logging.info('bind-type : ' + args.bindType)
+    logging.info('force-update : ' + str(args.bForce))
+    logging.info('analyze-all : ' + str(args.bAll))
+    logging.info('packinfo-file : ' + args.packInfoFile)
+    logging.info('soft-id : ' + args.softId)
+    logging.info('-----------------------------------------')
+    
+    
+    buildAladdinPackage(args.xmlFile, args.bDownload, args.bBuild, args.bindType, args.bForce, args.bAll, args.packInfoFile, args.softId)
 
 if "__main__" == __name__:
     sys.exit(main(len(sys.argv),sys.argv))

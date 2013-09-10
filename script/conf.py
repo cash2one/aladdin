@@ -9,6 +9,10 @@
     add aladdin support ------------------ 2013.09.06
 """
 
+#url
+url_full_xml = 'http://adminsoft.hao123.com:8080/source/api/pack_all_1.xml'
+url_daily_xml = 'http://adminsoft.hao123.com:8080/source/api/pack_today_1.xml'
+
 #exe
 curl_exe = '..\\tools\\bin\\curl.exe'
 wget_exe = '..\\tools\\bin\\wget.exe'
@@ -61,14 +65,18 @@ ftp_password_old = 'soft_mgr_pass'
 ftp_subdir_old = '/softs/'
 
 watchdog_notify_list = [
-                        'D:\\autopack\\info\\',
-                        'D:\\autopack\\res\\baidusd\\',
-                        'D:\\autopack\\res\\nobind\\',
-                        'D:\\autopack\\res\\qqmgr\\',
-                        'D:\\autopack\\tools\\bdnsis\\',
-                        'D:\\autopack\\tools\\bdnsis_nobind\\',
-                        'D:\\autopack\\tools\\qqnsis\\',
-                        'D:\\autopack\\tools\\qqnsis_nobind\\',
+                        'd:\\autopack\\info\\',
+                        'd:\\autopack\\res\\baidusd\\',
+                        'd:\\autopack\\res\\nobind\\',
+                        'd:\\autopack\\res\\qqmgr\\',
+                        'd:\\autopack\\tools\\bdnsis\\',
+                        'd:\\autopack\\tools\\bdnsis_nobind\\',
+                        'd:\\autopack\\tools\\qqnsis\\',
+                        'd:\\autopack\\tools\\qqnsis_nobind\\',
                         ]
+watchdog_notify_ready_file = 'd:\\autopack\\info\\pack_ready.txt'
+ready_string = 'i am ready'
+not_ready_string = 'i am not ready'
 
 #wget -r -nH --cut-dirs=1 ftp://10.52.175.51:8021/softs/ -P . --ftp-user=soft_mgr_edit --ftp-password=soft_mgr_pass
+ 
