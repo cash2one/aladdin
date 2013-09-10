@@ -60,4 +60,15 @@ ftp_user_old = 'soft_mgr_edit'
 ftp_password_old = 'soft_mgr_pass'
 ftp_subdir_old = '/softs/'
 
+watchdog_notify_list = [
+                        'D:\\autopack\\info\\',
+                        'D:\\autopack\\res\\baidusd\\',
+                        'D:\\autopack\\res\\nobind\\',
+                        'D:\\autopack\\res\\qqmgr\\',
+                        'D:\\autopack\\tools\\bdnsis\\',
+                        'D:\\autopack\\tools\\bdnsis_nobind\\',
+                        'D:\\autopack\\tools\\qqnsis\\',
+                        'D:\\autopack\\tools\\qqnsis_nobind\\',
+                        ]
+
 #wget -r -nH --cut-dirs=1 ftp://10.52.175.51:8021/softs/ -P . --ftp-user=soft_mgr_edit --ftp-password=soft_mgr_pass

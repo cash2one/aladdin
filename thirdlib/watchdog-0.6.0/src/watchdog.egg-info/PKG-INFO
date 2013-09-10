@@ -1,4 +1,4 @@
-Metadata-Version: 1.0
+Metadata-Version: 1.1
 Name: watchdog
 Version: 0.6.0
 Summary: Filesystem events monitoring
