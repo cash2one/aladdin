@@ -261,7 +261,7 @@ def copyPackageToArchiveFolder():
     logging.info(command)
     os.system(command)
     
-def buildAladdinPackage(xmlFile, bDownload, bBuild, bindType, bForce, bAll, packInfoFile, o_softId, bCopy):
+def buildAladdinPackage(xmlFile, bDownload, bBuild, bindType, bForce, bAll, packInfoFile, o_softId, bCopy, o_xsoftId):
     error_summary = []
     
     #get all maintain list
@@ -286,6 +286,9 @@ def buildAladdinPackage(xmlFile, bDownload, bBuild, bindType, bForce, bAll, pack
         aladdin_maintain_list = []
         for item in o_softId.split(';'):
             aladdin_maintain_list.append(item)
+    if o_xsoftId != '':
+        for item in o_xsoftId.split(';'):
+            aladdin_maintain_list.remove(item)
     
     #xml file to anylize
     xmlFile = conf.aladdin_xml_full
@@ -544,12 +547,21 @@ def buildAladdinPackage(xmlFile, bDownload, bBuild, bindType, bForce, bAll, pack
                 tdom.writexml(writer)
                 writer.close()
                 
-                #build specific package
-                if bBuild:
-                    buildPackage(softid, bindType)
-                    signPackage(str(softid), bindType)
-                    renamePackage(str(softid), bindType)
-                    copyPackageUpdate(str(softid), bindType)
+            #if bDownload is set, also download soft、ico
+            if bDownload:
+                #soft
+                command = conf.wget_exe + ' ' + downloadLink + ' -O ' + conf.aladdin_package_folder + softid + '\\' + filename
+                os.system(command.encode(sys.getfilesystemencoding()))
+                #ico
+                command = conf.wget_exe + ' ' + iconAddr + ' -O ' + conf.aladdin_package_folder + softid + '\\' + softid + '.png'
+                os.system(command.encode(sys.getfilesystemencoding()))
+            
+            #build specific package
+            if bBuild:
+                buildPackage(softid, bindType)
+                signPackage(str(softid), bindType)
+                renamePackage(str(softid), bindType)
+                copyPackageUpdate(str(softid), bindType)
             
         #update list
         generateUpdateList(aladdin_update_list)
@@ -579,6 +591,7 @@ def main(argc, argv):
     parser.add_argument('-a', '--analyze-all', action='store_true', default=False, dest='bAll', help='analyze all tasks')
     parser.add_argument('-p', '--packinfo-file', action='store', default='', dest='packInfoFile', help='packlist maintain list file')
     parser.add_argument('-s', '--soft-id', action='store', default='', dest='softId', help='use manual softid list, first considered')
+    parser.add_argument('-x', '--excluded-softid', action='store', default='', dest='xsoftId', help='excluded softid list, first considered')
     parser.add_argument('-c', '--copyto-archive', action='store_true', default=False, dest='bCopy', help='also copy to archive folder')
     args = parser.parse_args()
     logging.info('-----------------------------------------')
@@ -590,11 +603,12 @@ def main(argc, argv):
     logging.info('analyze-all : ' + str(args.bAll))
     logging.info('packinfo-file : ' + args.packInfoFile)
     logging.info('soft-id : ' + args.softId)
+    logging.info('excluded-softid : ' + args.xsoftId)
     logging.info('copyto-archive : ' + str(args.bCopy))
     logging.info('-----------------------------------------')
     
     
-    buildAladdinPackage(args.xmlFile, args.bDownload, args.bBuild, args.bindType, args.bForce, args.bAll, args.packInfoFile, args.softId, args.bCopy)
+    buildAladdinPackage(args.xmlFile, args.bDownload, args.bBuild, args.bindType, args.bForce, args.bAll, args.packInfoFile, args.softId, args.bCopy, args.xsoftId)
 
 if "__main__" == __name__:
     sys.exit(main(len(sys.argv),sys.argv))

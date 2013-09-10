@@ -30,10 +30,10 @@ class AladdinEventHandler(FileSystemEventHandler):
                 logging.info('-----------------------------------------')
                 logging.info('start building aladdin installers')
                 
-                aladdin.buildAladdinPackage(xmlFile=conf.aladdin_xml_full, bDownload=True, bBuild=True, bindType='baidusd;baidusd_nobind', bForce=False, bAll=False, packInfoFile=conf.baidusd_packinfo_file, o_softId='', bCopy=True)
-                aladdin.buildAladdinPackage(xmlFile=conf.aladdin_xml_daily, bDownload=True, bBuild=True, bindType='baidusd;baidusd_nobind', bForce=False, bAll=False, packInfoFile=conf.baidusd_packinfo_file, o_softId='', bCopy=True)
-                aladdin.buildAladdinPackage(xmlFile=conf.aladdin_xml_full, bDownload=True, bBuild=True, bindType='qqmgr;qqmgr_nobind', bForce=False, bAll=False, packInfoFile=conf.qqmgr_packinfo_file, o_softId='', bCopy=True)
-                aladdin.buildAladdinPackage(xmlFile=conf.aladdin_xml_daily, bDownload=True, bBuild=True, bindType='qqmgr;qqmgr_nobind', bForce=False, bAll=False, packInfoFile=conf.qqmgr_packinfo_file, o_softId='', bCopy=True)
+                aladdin.buildAladdinPackage(xmlFile=conf.aladdin_xml_full, bDownload=True, bBuild=True, bindType='baidusd;baidusd_nobind', bForce=False, bAll=False, packInfoFile=conf.baidusd_packinfo_file, o_softId='', bCopy=True, o_xsoftId='')
+                aladdin.buildAladdinPackage(xmlFile=conf.aladdin_xml_daily, bDownload=True, bBuild=True, bindType='baidusd;baidusd_nobind', bForce=False, bAll=False, packInfoFile=conf.baidusd_packinfo_file, o_softId='', bCopy=True, o_xsoftId='')
+                aladdin.buildAladdinPackage(xmlFile=conf.aladdin_xml_full, bDownload=True, bBuild=True, bindType='qqmgr;qqmgr_nobind', bForce=False, bAll=False, packInfoFile=conf.qqmgr_packinfo_file, o_softId='', bCopy=True, o_xsoftId='')
+                aladdin.buildAladdinPackage(xmlFile=conf.aladdin_xml_daily, bDownload=True, bBuild=True, bindType='qqmgr;qqmgr_nobind', bForce=False, bAll=False, packInfoFile=conf.qqmgr_packinfo_file, o_softId='', bCopy=True, o_xsoftId='')
                 
                 logging.info('-----------------------------------------')
                 logging.info('build complete')
