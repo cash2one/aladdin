@@ -266,7 +266,7 @@ def copyPackageToArchiveFolder():
     logging.info(command)
     os.system(command)
     
-def buildAladdinPackage(xmlFile, bDownload, bBuild, bindType, bForce, bAll, packInfoFile, o_softId, bCopy, o_xsoftId):
+def buildAladdinPackage(xmlFile, bDownload, bBuild, bindType, bForce, bAll, packInfoFile, o_softId, bCopy, o_xsoftId, xpackInfoFile):
     error_summary = []
     
     #get all maintain list
@@ -283,6 +283,18 @@ def buildAladdinPackage(xmlFile, bDownload, bBuild, bindType, bForce, bAll, pack
         bdlist_file.close()
     except Exception, e:
         logging.error('error when get softid maintain list')
+        logging.error(e)
+        return
+    try:
+        if xpackInfoFile != '':
+            xbdlist_file = open(xpackInfoFile, 'r')
+            for line in xbdlist_file.readlines():
+                item = line.strip('\r\n \t')
+                if item in aladdin_maintain_list:
+                    aladdin_maintain_list.remove(item)
+            xbdlist_file.close()
+    except Exception, e:
+        logging.error('error when get softid excluded maintain list')
         logging.error(e)
         return
     
@@ -596,6 +608,7 @@ def main(argc, argv):
     parser.add_argument('-F', '--force-update', action='store_true', default=False, dest='bForce', help='force updating everything')
     parser.add_argument('-a', '--analyze-all', action='store_true', default=False, dest='bAll', help='analyze all tasks')
     parser.add_argument('-p', '--packinfo-file', action='store', default='', dest='packInfoFile', help='packlist maintain list file')
+    parser.add_argument('-P', '--excluded-packinfo-file', action='store', default='', dest='xpackInfoFile', help='excluded packlist maintain list file')
     parser.add_argument('-s', '--soft-id', action='store', default='', dest='softId', help='use manual softid list, first considered')
     parser.add_argument('-x', '--excluded-softid', action='store', default='', dest='xsoftId', help='excluded softid list, first considered')
     parser.add_argument('-c', '--copyto-archive', action='store_true', default=False, dest='bCopy', help='also copy to archive folder')
@@ -608,13 +621,14 @@ def main(argc, argv):
     logging.info('force-update : ' + str(args.bForce))
     logging.info('analyze-all : ' + str(args.bAll))
     logging.info('packinfo-file : ' + args.packInfoFile)
+    logging.info('excluded-packinfo-file : ' + args.xpackInfoFile)
     logging.info('soft-id : ' + args.softId)
     logging.info('excluded-softid : ' + args.xsoftId)
     logging.info('copyto-archive : ' + str(args.bCopy))
     logging.info('-----------------------------------------')
     
     
-    buildAladdinPackage(args.xmlFile, args.bDownload, args.bBuild, args.bindType, args.bForce, args.bAll, args.packInfoFile, args.softId, args.bCopy, args.xsoftId)
+    buildAladdinPackage(args.xmlFile, args.bDownload, args.bBuild, args.bindType, args.bForce, args.bAll, args.packInfoFile, args.softId, args.bCopy, args.xsoftId, args.xpackInfoFile)
 
 if "__main__" == __name__:
     sys.exit(main(len(sys.argv),sys.argv))
