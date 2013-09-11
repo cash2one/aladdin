@@ -43,6 +43,10 @@ aladdin_installer_folder= '..\\output\\aladdin\\installers\\'
 ico_folder = '..\\output\\ico\\'
 aladdin_ico_folder = '..\\output\\aladdin\\ico\\'
 
+aladdin_archive_folder = '\\\\10.52.174.35\\public\\aladdin\\installers\\'
+aladdin_update_pool_folder = '..\\output\\aladdin\\installers\\update\\'
+aladdin_update_list_file = '..\\output\\aladdin\\installers\\update_list.txt'
+
 baidusd_res_folder = '..\\res\\baidusd'
 qqmgr_res_folder = '..\\res\\qqmgr'
 nobind_res_folder = '..\\res\\nobind'
