@@ -165,18 +165,18 @@ def buildPackage(softid, type):
             os.system(command.encode(sys.getfilesystemencoding()))
             
             #delete output installer folder
-            command = 'del /Q /S ' + conf.aladdin_installer_folder + 'bind2\\' + softid
-            logging.info(command)
-            os.system(command.encode(sys.getfilesystemencoding()))
+            #command = 'del /Q /S ' + conf.aladdin_installer_folder + 'bind2\\' + softid
+            #logging.info(command)
+            #os.system(command.encode(sys.getfilesystemencoding()))
             #init single task installer folder
-            if not os.path.isdir(conf.aladdin_installer_folder + 'bind2\\' + softid):
-                os.mkdir(conf.aladdin_installer_folder + 'bind2\\' + softid)
-            command = 'copy /Y ' + conf.task_pool_nsis_folder + 'stub\\AladinDemo.exe ' + conf.aladdin_installer_folder + 'bind2\\' + softid + '\\Setup.exe'
-            logging.info(command)
-            os.system(command.encode(sys.getfilesystemencoding()))
-            command = 'copy /Y ' + conf.task_pool_nsis_folder + 'task.xml ' + conf.aladdin_installer_folder + 'bind2\\' + softid + '\\task.xml'
-            logging.info(command)
-            os.system(command.encode(sys.getfilesystemencoding()))
+            #if not os.path.isdir(conf.aladdin_installer_folder + 'bind2\\' + softid):
+            #    os.mkdir(conf.aladdin_installer_folder + 'bind2\\' + softid)
+            #command = 'copy /Y ' + conf.task_pool_nsis_folder + 'stub\\AladinDemo.exe ' + conf.aladdin_installer_folder + 'bind2\\' + softid + '\\Setup.exe'
+            #logging.info(command)
+            #os.system(command.encode(sys.getfilesystemencoding()))
+            #command = 'copy /Y ' + conf.task_pool_nsis_folder + 'task.xml ' + conf.aladdin_installer_folder + 'bind2\\' + softid + '\\task.xml'
+            #logging.info(command)
+            #os.system(command.encode(sys.getfilesystemencoding()))
         
         #copy src packages
         #delete output installer folder
@@ -199,7 +199,7 @@ def signPackage(softid, type):
             sign.main(3, ['sign.py', 'bdkv', conf.aladdin_installer_folder + 'unbind\\' + softid + '\\'])
         elif item.lower() == 'baidusd' or item.lower() == 'qqmgr':
             sign.main(3, ['sign.py', 'bdkv', conf.aladdin_installer_folder + 'bind1\\' + softid + '\\'])
-            sign.main(3, ['sign.py', 'bdkv', conf.aladdin_installer_folder + 'bind2\\' + softid + '\\'])
+            #sign.main(3, ['sign.py', 'bdkv', conf.aladdin_installer_folder + 'bind2\\' + softid + '\\'])
     
 def renamePackage(softid, type):
     for item in type.split(';'):
@@ -207,46 +207,51 @@ def renamePackage(softid, type):
             rename_package.FileOperation(conf.aladdin_installer_folder + 'unbind\\' + softid + '\\', rename_package.renameExe, '*.xml')
         elif item.lower() == 'baidusd' or item.lower() == 'qqmgr':
             rename_package.FileOperation(conf.aladdin_installer_folder + 'bind1\\' + softid + '\\', rename_package.renameExe, '*.xml')
-            rename_package.FileOperation(conf.aladdin_installer_folder + 'bind2\\' + softid + '\\', rename_package.renameExe, '*.xml')
+            #rename_package.FileOperation(conf.aladdin_installer_folder + 'bind2\\' + softid + '\\', rename_package.renameExe, '*.xml')
             rename_package.FileOperation(conf.aladdin_installer_folder + 'src\\' + softid + '\\', rename_package.renameExe, '*.xml')
 
 def cleanUpdatePoolFolder():
-    command = 'del /Q /S ' + conf.aladdin_update_pool_folder + 'bind\\'
+    command = 'rd /Q /S ' + conf.aladdin_update_pool_folder + 'bind\\'
     logging.info(command)
     os.system(command)
-    command = 'del /Q /S ' + conf.aladdin_update_pool_folder + 'bind1\\'
+    command = 'rd /Q /S ' + conf.aladdin_update_pool_folder + 'bind1\\'
     logging.info(command)
     os.system(command)
-    command = 'del /Q /S ' + conf.aladdin_update_pool_folder + 'bind2\\'
+    #command = 'rd /Q /S ' + conf.aladdin_update_pool_folder + 'bind2\\'
+    #logging.info(command)
+    #os.system(command)
+    command = 'rd /Q /S ' + conf.aladdin_update_pool_folder + 'src\\'
     logging.info(command)
     os.system(command)
-    command = 'del /Q /S ' + conf.aladdin_update_pool_folder + 'src\\'
-    logging.info(command)
-    os.system(command)
-    command = 'del /Q /S ' + conf.aladdin_update_pool_folder + 'unbind\\'
+    command = 'rd /Q /S ' + conf.aladdin_update_pool_folder + 'unbind\\'
     logging.info(command)
     os.system(command)
     
+def cleanArchiveFolder():
+    command = 'rd /Q /S ' + conf.aladdin_archive_folder + 'update'
+    logging.info(command)
+    os.system(command)
+
 def copyPackageUpdate(softid, type):
     for item in type.split(';'):
         if item.lower() == 'baidusd_nobind' or item.lower() == 'qqmgr_nobind':
-            command = 'xcopy /Y /E /S ' + conf.aladdin_installer_folder + 'unbind\\' + softid + ' ' + conf.aladdin_update_pool_folder + 'unbind\\'
+            command = 'xcopy /Y /E /S /I ' + conf.aladdin_installer_folder + 'unbind\\' + softid + ' ' + conf.aladdin_update_pool_folder + 'unbind\\' + softid + ''
             logging.info(command)
             os.system(command)
-            command = 'xcopy /Y /E /S ' + conf.aladdin_installer_folder + 'src\\' + softid + ' ' + conf.aladdin_update_pool_folder + 'src\\'
+            command = 'xcopy /Y /E /S /I ' + conf.aladdin_installer_folder + 'src\\' + softid + ' ' + conf.aladdin_update_pool_folder + 'src\\' + softid + ''
             logging.info(command)
             os.system(command)
         elif item.lower() == 'baidusd' or item.lower() == 'qqmgr':
-            command = 'xcopy /Y /E /S ' + conf.aladdin_installer_folder + 'bind\\' + softid + ' ' + conf.aladdin_update_pool_folder + 'bind\\'
+            command = 'xcopy /Y /E /S /I ' + conf.aladdin_installer_folder + 'bind\\' + softid + ' ' + conf.aladdin_update_pool_folder + 'bind\\' + softid + ''
             logging.info(command)
             os.system(command)
-            command = 'xcopy /Y /E /S ' + conf.aladdin_installer_folder + 'bind1\\' + softid + ' ' + conf.aladdin_update_pool_folder + 'bind1\\'
+            command = 'xcopy /Y /E /S /I ' + conf.aladdin_installer_folder + 'bind1\\' + softid + ' ' + conf.aladdin_update_pool_folder + 'bind1\\' + softid + ''
             logging.info(command)
             os.system(command)
-            command = 'xcopy /Y /E /S ' + conf.aladdin_installer_folder + 'bind2\\' + softid + ' ' + conf.aladdin_update_pool_folder + 'bind2\\'
-            logging.info(command)
-            os.system(command)
-            command = 'xcopy /Y /E /S ' + conf.aladdin_installer_folder + 'src\\' + softid + ' ' + conf.aladdin_update_pool_folder + 'src\\'
+            #command = 'xcopy /Y /E /S /I ' + conf.aladdin_installer_folder + 'bind2\\' + softid + ' ' + conf.aladdin_update_pool_folder + 'bind2\\' + softid + ''
+            #logging.info(command)
+            #os.system(command)
+            command = 'xcopy /Y /E /S /I ' + conf.aladdin_installer_folder + 'src\\' + softid + ' ' + conf.aladdin_update_pool_folder + 'src\\' + softid + ''
             logging.info(command)
             os.system(command)
 
@@ -257,7 +262,7 @@ def generateUpdateList(aladdin_update_list):
     comm.saveFile(conf.aladdin_update_list_file, ctx)
 
 def copyPackageToArchiveFolder():
-    command = 'robocopy ' + conf.aladdin_installer_folder[:-1] + ' ' + conf.aladdin_archive_folder + ' /E /XO /fft '
+    command = conf.robo_copy_exe + ' ' + conf.aladdin_installer_folder[:-1] + ' ' + conf.aladdin_archive_folder + ' /E /XO /fft '
     logging.info(command)
     os.system(command)
     
@@ -288,7 +293,8 @@ def buildAladdinPackage(xmlFile, bDownload, bBuild, bindType, bForce, bAll, pack
             aladdin_maintain_list.append(item)
     if o_xsoftId != '':
         for item in o_xsoftId.split(';'):
-            aladdin_maintain_list.remove(item)
+            if item in aladdin_maintain_list:
+                aladdin_maintain_list.remove(item)
     
     #xml file to anylize
     xmlFile = conf.aladdin_xml_full
@@ -298,6 +304,7 @@ def buildAladdinPackage(xmlFile, bDownload, bBuild, bindType, bForce, bAll, pack
     #clean update pool folder
     if bBuild:
         cleanUpdatePoolFolder()
+        cleanArchiveFolder()
     
     #do it
     #1.update all hao123softid single xmls
@@ -529,18 +536,17 @@ def buildAladdinPackage(xmlFile, bDownload, bBuild, bindType, bForce, bAll, pack
                 #mark upadte
                 aladdin_update_list.append(softid)
                 
-                #if bDownload is set, also download soft、ico, and update softmd5、logomd5、softid
-                if bDownload:
-                    #soft
-                    command = conf.wget_exe + ' ' + downloadLink + ' -O ' + conf.aladdin_package_folder + softid + '\\' + filename
-                    os.system(command.encode(sys.getfilesystemencoding()))
-                    #ico
-                    command = conf.wget_exe + ' ' + iconAddr + ' -O ' + conf.aladdin_package_folder + softid + '\\' + softid + '.png'
-                    os.system(command.encode(sys.getfilesystemencoding()))
-                    #softmd5
-                    tsoftMD5.childNodes[0].data = calcFileMd5(conf.aladdin_package_folder + softid + '\\' + filename)
-                    #icomd5
-                    tlogoMD5.childNodes[0].data = calcFileMd5(conf.aladdin_package_folder + softid + '\\' + softid + '.png')
+                #always download when bUpdate
+                #soft
+                command = conf.wget_exe + ' ' + downloadLink + ' -O ' + conf.aladdin_package_folder + softid + '\\' + filename
+                os.system(command.encode(sys.getfilesystemencoding()))
+                #ico
+                command = conf.wget_exe + ' ' + iconAddr + ' -O ' + conf.aladdin_package_folder + softid + '\\' + softid + '.png'
+                os.system(command.encode(sys.getfilesystemencoding()))
+                #softmd5
+                tsoftMD5.childNodes[0].data = calcFileMd5(conf.aladdin_package_folder + softid + '\\' + filename)
+                #icomd5
+                tlogoMD5.childNodes[0].data = calcFileMd5(conf.aladdin_package_folder + softid + '\\' + softid + '.png')
                 
                 #save to xml
                 writer = open(taskxml_file, 'w')

@@ -18,6 +18,8 @@ curl_exe = '..\\tools\\bin\\curl.exe'
 wget_exe = '..\\tools\\bin\\wget.exe'
 wget_args = ' -nH --cut-dirs=1 '
 
+robo_copy_exe = '..\\tools\\bin\\robocopy.exe'
+
 baidusd_nsis_exe = '..\\tools\\bdnsis\\makensis.exe'
 baidusd_nsis_nobind_exe = '..\\tools\\bdnsis_nobind\\makensis.exe'
 qqmgr_nsis_exe = '..\\tools\\qqnsis\\makensis.exe'
