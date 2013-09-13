@@ -289,7 +289,7 @@ def copyPackageToArchiveFolder():
     logging.info(command)
     os.system(command)
     
-def buildAladdinPackage(xmlFile, bDownload, bBuild, bindType, bForce, bAll, packInfoFile, o_softId, bCopy, o_xsoftId, xpackInfoFile, bNoBuild):
+def buildAladdinPackage(xmlFile, bDownload, bBuild, bindType, bForce, bAll, packInfoFile, o_softId, bCopy, o_xsoftId, xpackInfoFile, bNoBuild, bNoCopyToUpdate):
     error_summary = []
     bCleanArchive = False
     
@@ -596,7 +596,8 @@ def buildAladdinPackage(xmlFile, bDownload, bBuild, bindType, bForce, bAll, pack
                     buildPackage(softid, bindType)
                     signPackage(str(softid), bindType)
                     renamePackage(str(softid), bindType)
-                    copyPackageUpdate(str(softid), bindType)
+                    if not bNoCopyToUpdate:
+                        copyPackageUpdate(str(softid), bindType)
                 
             #if bDownload is set, also download soft、ico
             if bDownload and not bUpdate:
@@ -619,7 +620,8 @@ def buildAladdinPackage(xmlFile, bDownload, bBuild, bindType, bForce, bAll, pack
                 buildPackage(softid, bindType)
                 signPackage(str(softid), bindType)
                 renamePackage(str(softid), bindType)
-                copyPackageUpdate(str(softid), bindType)
+                if not bNoCopyToUpdate:
+                    copyPackageUpdate(str(softid), bindType)
             
         #update list
         generateUpdateList(aladdin_update_list, bindType)
@@ -656,7 +658,8 @@ def main(argc, argv):
     parser.add_argument('-s', '--soft-id', action='store', default='', dest='softId', help='use manual softid list, first considered')
     parser.add_argument('-x', '--excluded-softid', action='store', default='', dest='xsoftId', help='excluded softid list, first considered')
     parser.add_argument('-c', '--copyto-archive', action='store_true', default=False, dest='bCopy', help='also copy to archive folder')
-    parser.add_argument('-n', '--nobuild-when-update', action='store_true', default=False, dest='bNoBuild', help='not build when update')
+    parser.add_argument('-B', '--nobuild-when-update', action='store_true', default=False, dest='bNoBuild', help='not build when update')
+    parser.add_argument('-U', '--nocopy-to-update', action='store_true', default=False, dest='bCopyUpdate', help='not copy to update folder')
     args = parser.parse_args()
     logging.info('-----------------------------------------')
     logging.info('xml-file : ' + args.xmlFile)
@@ -671,10 +674,11 @@ def main(argc, argv):
     logging.info('excluded-softid : ' + args.xsoftId)
     logging.info('copyto-archive : ' + str(args.bCopy))
     logging.info('nobuild-when-update : ' + str(args.bNoBuild))
+    logging.info('nocopy-to-update : ' + str(args.bCopyUpdate))
     logging.info('-----------------------------------------')
     
     
-    buildAladdinPackage(args.xmlFile, args.bDownload, args.bBuild, args.bindType, args.bForce, args.bAll, args.packInfoFile, args.softId, args.bCopy, args.xsoftId, args.xpackInfoFile, args.bNoBuild)
+    buildAladdinPackage(args.xmlFile, args.bDownload, args.bBuild, args.bindType, args.bForce, args.bAll, args.packInfoFile, args.softId, args.bCopy, args.xsoftId, args.xpackInfoFile, args.bNoBuild, args.bCopyUpdate)
 
 if "__main__" == __name__:
     sys.exit(main(len(sys.argv),sys.argv))
