@@ -227,12 +227,24 @@ def cleanUpdatePoolFolder():
     command = 'rd /Q /S ' + conf.aladdin_update_pool_folder + 'unbind\\'
     logging.info(command)
     os.system(command)
-    command = 'rd /Q /S ' + conf.aladdin_changelist_folder
+    command = 'rd /Q /S ' + conf.aladdin_update_pool_folder + 'changelist\\'
     logging.info(command)
     os.system(command)
     
 def cleanArchiveFolder():
-    command = 'rd /Q /S ' + conf.aladdin_archive_folder + 'update'
+    command = 'rd /Q /S ' + conf.aladdin_archive_update_folder + 'bind\\'
+    logging.info(command)
+    os.system(command)
+    command = 'rd /Q /S ' + conf.aladdin_archive_update_folder + 'bind1\\'
+    logging.info(command)
+    os.system(command)
+    #command = 'rd /Q /S ' + conf.aladdin_archive_update_folder + 'bind2\\'
+    #logging.info(command)
+    #os.system(command)
+    command = 'rd /Q /S ' + conf.aladdin_archive_update_folder + 'src\\'
+    logging.info(command)
+    os.system(command)
+    command = 'rd /Q /S ' + conf.aladdin_archive_update_folder + 'unbind\\'
     logging.info(command)
     os.system(command)
 
@@ -263,13 +275,14 @@ def generateUpdateList(aladdin_update_list, type):
     ctx = ''
     for item in aladdin_update_list:
         ctx += item + '\r\n'
-    clname = type.replace(';','_')
-    clname += '-changelist-'
-    clname += str(datetime.datetime.now()).replace(':','-')
-    clname += '.txt'
-    if not os.path.isdir(conf.aladdin_changelist_folder):
-        os.mkdir(conf.aladdin_changelist_folder)
-    comm.saveFile(conf.aladdin_changelist_folder + clname, ctx)
+    if ctx != '':
+        clname = type.replace(';','_')
+        clname += '-changelist-'
+        clname += str(datetime.datetime.now()).replace(':','-')
+        clname += '.txt'
+        if not os.path.isdir(conf.aladdin_update_pool_folder + 'changelist'):
+            os.mkdir(conf.aladdin_update_pool_folder + 'changelist')
+        comm.saveFile(conf.aladdin_update_pool_folder + 'changelist\\' + clname, ctx)
 
 def copyPackageToArchiveFolder():
     command = conf.robo_copy_exe + ' ' + conf.aladdin_installer_folder[:-1] + ' ' + conf.aladdin_archive_folder + ' /E /XO /fft /W:0 '
@@ -278,6 +291,10 @@ def copyPackageToArchiveFolder():
     
 def buildAladdinPackage(xmlFile, bDownload, bBuild, bindType, bForce, bAll, packInfoFile, o_softId, bCopy, o_xsoftId, xpackInfoFile, bNoBuild):
     error_summary = []
+    bCleanArchive = False
+    
+    #always clean update pool folder
+    cleanUpdatePoolFolder()
     
     #get all maintain list
     i_packInfoFile = conf.packinfo_aladdin_file
@@ -322,11 +339,6 @@ def buildAladdinPackage(xmlFile, bDownload, bBuild, bindType, bForce, bAll, pack
     xmlFile = conf.aladdin_xml_full
     if xmlFile != '':
         i_xmlFile = xmlFile
-    
-    #clean update pool folder
-    if bBuild:
-        cleanUpdatePoolFolder()
-        cleanArchiveFolder()
     
     #do it
     #1.update all hao123softid single xmls
@@ -575,6 +587,9 @@ def buildAladdinPackage(xmlFile, bDownload, bBuild, bindType, bForce, bAll, pack
                 #always build when bUpdate
                 if not bNoBuild:
                     
+                    #mark clean archive
+                    bCleanArchive = True
+                    
                     #mark upadte
                     aladdin_update_list.append(softid)
                     
@@ -595,6 +610,9 @@ def buildAladdinPackage(xmlFile, bDownload, bBuild, bindType, bForce, bAll, pack
             #build specific package
             if bBuild and not (bUpdate and not bNoBuild):
                 
+                #mark clean archive
+                bCleanArchive = True
+                    
                 #mark upadte
                 aladdin_update_list.append(softid)
                 
@@ -605,7 +623,11 @@ def buildAladdinPackage(xmlFile, bDownload, bBuild, bindType, bForce, bAll, pack
             
         #update list
         generateUpdateList(aladdin_update_list, bindType)
+        
         if bCopy:
+            #clean update pool folder
+            if bCleanArchive:
+                cleanArchiveFolder()
             copyPackageToArchiveFolder()
             
     except Exception, e:

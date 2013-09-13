@@ -48,6 +48,7 @@ ico_folder = '..\\output\\ico\\'
 aladdin_ico_folder = '..\\output\\aladdin\\ico\\'
 
 aladdin_archive_folder = '\\\\10.52.174.35\\public\\aladdin\\DailyBuild\\'
+aladdin_archive_update_folder = '\\\\10.52.174.35\\public\\aladdin\\DailyBuild\\update\\'
 aladdin_update_pool_folder = '..\\output\\aladdin\\installers\\update\\'
 aladdin_changelist_folder = '..\\output\\aladdin\\installers\\update\\changelist\\'
 
