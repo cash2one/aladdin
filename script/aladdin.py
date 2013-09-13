@@ -480,7 +480,7 @@ def buildAladdinPackage(xmlFile, bDownload, bBuild, bindType, bForce, bAll, pack
                 tsystemRequire = troot.getElementsByTagName('SystemRequire')[0]
                 if tsystemRequire.childNodes[0].data != systemRequire:
                     bUpdate = True
-                    tsystemRequire.childNodes[0].data = update
+                    tsystemRequire.childNodes[0].data = systemRequire
                 else:
                     pass
             else:
