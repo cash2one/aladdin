@@ -336,7 +336,7 @@ def buildAladdinPackage(xmlFile, bDownload, bBuild, bindType, bForce, bAll, pack
                 aladdin_maintain_list.remove(item)
     
     #xml file to anylize
-    xmlFile = conf.aladdin_xml_full
+    i_xmlFile = conf.aladdin_xml_full
     if xmlFile != '':
         i_xmlFile = xmlFile
     
@@ -645,10 +645,10 @@ def main(argc, argv):
 
     #parse arguments
     parser = argparse.ArgumentParser()
-    parser.add_argument('-f', '--xml-file', action='store', default='..\\info\\pack_today_1.xml', dest='xmlFile', help='hao123 xml file location, second considered')
+    parser.add_argument('-f', '--xml-file', action='store', default=conf.aladdin_xml_full, dest='xmlFile', help='hao123 xml file location, second considered')
     parser.add_argument('-d', '--auto-download', action='store_true', default=False, dest='bDownload', help='auto download original packages')
     parser.add_argument('-b', '--auto-build', action='store_true', default=False, dest='bBuild', help='auto build packages')
-    parser.add_argument('-t', '--bind-type', action='store', default='baidusd;baidusd_nobind', dest='bindType', help='bind type')
+    parser.add_argument('-t', '--bind-type', action='store', default='baidusd', dest='bindType', help='bind type')
     parser.add_argument('-F', '--force-update', action='store_true', default=False, dest='bForce', help='force updating everything')
     parser.add_argument('-a', '--analyze-all', action='store_true', default=False, dest='bAll', help='analyze all tasks')
     parser.add_argument('-p', '--packinfo-file', action='store', default='', dest='packInfoFile', help='packlist maintain list file')
