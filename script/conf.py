@@ -30,12 +30,14 @@ extract_icon_exe = '..\\tools\\bin\\extracticon.exe'
 #config files
 baidusd_packinfo_file = '..\\info\\packinfo_baidusd.txt'
 qqmgr_packinfo_file = '..\\info\\packinfo_qqmgr.txt'
+packinfo_aladdin_file = '..\\info\\packinfo_aladdin.txt'
+baidusd_packinfo_20_80_file = '..\\info\\95_aladin_id.txt'
+baidusd_packinfo_20_80_excluded_file = '..\\info\\ignored.txt'
+
 packdetail_file = '..\\info\\packdetail.txt'
 
 aladdin_xml_full = '..\\info\\pack_all_1.xml'
 aladdin_xml_daily = '..\\info\\pack_today_1.xml'
-
-packinfo_aladdin_file = '..\\info\\packinfo_aladdin.txt'
 
 #folders
 package_folder = '..\\output\\packages\\'
@@ -47,7 +49,7 @@ aladdin_ico_folder = '..\\output\\aladdin\\ico\\'
 
 aladdin_archive_folder = '\\\\10.52.174.35\\public\\aladdin\\DailyBuild\\'
 aladdin_update_pool_folder = '..\\output\\aladdin\\installers\\update\\'
-aladdin_update_list_file = '..\\output\\aladdin\\installers\\update_list.txt'
+aladdin_changelist_folder = '..\\output\\aladdin\\installers\\update\\changelist\\'
 
 baidusd_res_folder = '..\\res\\baidusd'
 qqmgr_res_folder = '..\\res\\qqmgr'

@@ -1,0 +1,1 @@
+python aladdin.py -an

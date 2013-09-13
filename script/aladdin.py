@@ -17,6 +17,7 @@ import xml.dom.minidom
 import base64
 import hashlib
 import io
+import datetime
 import rename_package
 import sign
 import comm
@@ -226,6 +227,9 @@ def cleanUpdatePoolFolder():
     command = 'rd /Q /S ' + conf.aladdin_update_pool_folder + 'unbind\\'
     logging.info(command)
     os.system(command)
+    command = 'rd /Q /S ' + conf.aladdin_changelist_folder
+    logging.info(command)
+    os.system(command)
     
 def cleanArchiveFolder():
     command = 'rd /Q /S ' + conf.aladdin_archive_folder + 'update'
@@ -255,18 +259,24 @@ def copyPackageUpdate(softid, type):
             logging.info(command)
             os.system(command)
 
-def generateUpdateList(aladdin_update_list):
+def generateUpdateList(aladdin_update_list, type):
     ctx = ''
     for item in aladdin_update_list:
         ctx += item + '\r\n'
-    comm.saveFile(conf.aladdin_update_list_file, ctx)
+    clname = type.replace(';','_')
+    clname += '-changelist-'
+    clname += str(datetime.datetime.now()).replace(':','-')
+    clname += '.txt'
+    if not os.path.isdir(conf.aladdin_changelist_folder):
+        os.mkdir(conf.aladdin_changelist_folder)
+    comm.saveFile(conf.aladdin_changelist_folder + clname, ctx)
 
 def copyPackageToArchiveFolder():
-    command = conf.robo_copy_exe + ' ' + conf.aladdin_installer_folder[:-1] + ' ' + conf.aladdin_archive_folder + ' /E /XO /fft '
+    command = conf.robo_copy_exe + ' ' + conf.aladdin_installer_folder[:-1] + ' ' + conf.aladdin_archive_folder + ' /E /XO /fft /W:0 '
     logging.info(command)
     os.system(command)
     
-def buildAladdinPackage(xmlFile, bDownload, bBuild, bindType, bForce, bAll, packInfoFile, o_softId, bCopy, o_xsoftId, xpackInfoFile):
+def buildAladdinPackage(xmlFile, bDownload, bBuild, bindType, bForce, bAll, packInfoFile, o_softId, bCopy, o_xsoftId, xpackInfoFile, bNoBuild):
     error_summary = []
     
     #get all maintain list
@@ -545,9 +555,6 @@ def buildAladdinPackage(xmlFile, bDownload, bBuild, bindType, bForce, bAll, pack
             #if bUpdate, do some real work
             if bUpdate:
                 
-                #mark upadte
-                aladdin_update_list.append(softid)
-                
                 #always download when bUpdate
                 #soft
                 command = conf.wget_exe + ' ' + downloadLink + ' -O ' + conf.aladdin_package_folder + softid + '\\' + filename
@@ -564,9 +571,20 @@ def buildAladdinPackage(xmlFile, bDownload, bBuild, bindType, bForce, bAll, pack
                 writer = open(taskxml_file, 'w')
                 tdom.writexml(writer)
                 writer.close()
+
+                #always build when bUpdate
+                if not bNoBuild:
+                    
+                    #mark upadte
+                    aladdin_update_list.append(softid)
+                    
+                    buildPackage(softid, bindType)
+                    signPackage(str(softid), bindType)
+                    renamePackage(str(softid), bindType)
+                    copyPackageUpdate(str(softid), bindType)
                 
             #if bDownload is set, also download soft、ico
-            if bDownload:
+            if bDownload and not bUpdate:
                 #soft
                 command = conf.wget_exe + ' ' + downloadLink + ' -O ' + conf.aladdin_package_folder + softid + '\\' + filename
                 os.system(command.encode(sys.getfilesystemencoding()))
@@ -575,14 +593,18 @@ def buildAladdinPackage(xmlFile, bDownload, bBuild, bindType, bForce, bAll, pack
                 os.system(command.encode(sys.getfilesystemencoding()))
             
             #build specific package
-            if bBuild:
+            if bBuild and not (bUpdate and not bNoBuild):
+                
+                #mark upadte
+                aladdin_update_list.append(softid)
+                
                 buildPackage(softid, bindType)
                 signPackage(str(softid), bindType)
                 renamePackage(str(softid), bindType)
                 copyPackageUpdate(str(softid), bindType)
             
         #update list
-        generateUpdateList(aladdin_update_list)
+        generateUpdateList(aladdin_update_list, bindType)
         if bCopy:
             copyPackageToArchiveFolder()
             
@@ -612,6 +634,7 @@ def main(argc, argv):
     parser.add_argument('-s', '--soft-id', action='store', default='', dest='softId', help='use manual softid list, first considered')
     parser.add_argument('-x', '--excluded-softid', action='store', default='', dest='xsoftId', help='excluded softid list, first considered')
     parser.add_argument('-c', '--copyto-archive', action='store_true', default=False, dest='bCopy', help='also copy to archive folder')
+    parser.add_argument('-n', '--nobuild-when-update', action='store_true', default=False, dest='bNoBuild', help='not build when update')
     args = parser.parse_args()
     logging.info('-----------------------------------------')
     logging.info('xml-file : ' + args.xmlFile)
@@ -625,10 +648,11 @@ def main(argc, argv):
     logging.info('soft-id : ' + args.softId)
     logging.info('excluded-softid : ' + args.xsoftId)
     logging.info('copyto-archive : ' + str(args.bCopy))
+    logging.info('nobuild-when-update : ' + str(args.bNoBuild))
     logging.info('-----------------------------------------')
     
     
-    buildAladdinPackage(args.xmlFile, args.bDownload, args.bBuild, args.bindType, args.bForce, args.bAll, args.packInfoFile, args.softId, args.bCopy, args.xsoftId, args.xpackInfoFile)
+    buildAladdinPackage(args.xmlFile, args.bDownload, args.bBuild, args.bindType, args.bForce, args.bAll, args.packInfoFile, args.softId, args.bCopy, args.xsoftId, args.xpackInfoFile, args.bNoBuild)
 
 if "__main__" == __name__:
     sys.exit(main(len(sys.argv),sys.argv))
