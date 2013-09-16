@@ -47,6 +47,11 @@ def buildPackage(softid, type):
     type
         baidusd, qqmgr, nobind
     ''' 
+
+    innerPackage = 'softsetup.exe'
+    originalFileName = getSoftidFileName(softid)
+    if originalFileName.lower().find('baiduplayernetsetup') != -1:
+        innerPackage = originalFileName
     
     #delete nsis folder
     command = 'del /Q /S ' + conf.task_pool_nsis_folder
@@ -84,7 +89,7 @@ def buildPackage(softid, type):
     os.system(command.encode(sys.getfilesystemencoding()))
     
     fp = open(conf.task_pool_nsis_folder + 'soft.nsh','w')
-    nshInfo = '!define FILENAME softsetup.exe'
+    nshInfo = '!define FILENAME ' + innerPackage
     fp.write(nshInfo)
     fp.close()
     logging.info('soft.nsh : ' + nshInfo)
@@ -277,8 +282,8 @@ def generateUpdateList(aladdin_update_list, type):
         ctx += item + '\r\n'
     if ctx != '':
         clname = type.replace(';','_')
-        clname += '-changelist-'
-        clname += str(datetime.datetime.now()).replace(':','-')
+        clname += '-changelist_'
+        clname += str(datetime.datetime.now()).replace(':','-').replace(' ','-').replace('.','_')
         clname += '.txt'
         if not os.path.isdir(conf.aladdin_update_pool_folder + 'changelist'):
             os.mkdir(conf.aladdin_update_pool_folder + 'changelist')
