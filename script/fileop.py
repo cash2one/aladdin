@@ -14,7 +14,7 @@
     add rcgen support ----------------------------------- 2013.03.13
 """
 
-import sys,os,glob,httplib,urllib,mimetypes,comm,sign_conf,xml.dom.minidom,win32api,shutil
+import sys,os,glob,httplib,urllib,urllib2,mimetypes,comm,sign_conf,xml.dom.minidom,win32api,shutil
 import logging,userconf
 import io,hashlib,time
 
@@ -129,6 +129,11 @@ def SignKav(file):
     command = sign_conf.byp_bin_path + 'KavSign.exe /s"' + file + '" /u"' + sign_conf.byp_bin_path + 'keys\\PrivateKey.sgn"'
     os.system(command.encode(sys.getfilesystemencoding()))
 
+def LoadSign(file):
+    logging.info('Signning File With LoadSign: ' + file)
+    command = sign_conf.byp_bin_path + 'BDKVFileSign.exe /s ' + file
+    os.system(command.encode(sys.getfilesystemencoding()))
+
 def GenRC(file,writer):
     lfile = file.lower()
     if lfile.find('\\basic\\') != -1 or lfile.find('\\vdc_proj\\') != -1 or lfile.find('\\webshield_proj\\') != -1:
@@ -148,9 +153,9 @@ def GenRCFile(path,product,op,ftype):
     elif product == 'bdkv':
         rcfile = sign_conf.kv_rclist_file
     writer = open(rcfile,'w')
-    writer.write('<?xml version="1.0" ?><conf>\n')
+    writer.write('<?xml version="1.0" ?><sign_conf.\n')
     FileOperationWithExtraPara(path,op,writer,ftype)
-    writer.write('</conf>')
+    writer.write('</sign_conf.')
     writer.close()
 
 def get_content_type(filename):
@@ -193,15 +198,29 @@ def post_multipart(host, selector, fields, files, blanks):
     h.putheader('content-length', str(len(body)))
     h.putheader('Connection','keep-alive')
     h.putheader('Cache-Control','max-age=0')
-    #h.putheader('Host','sign.baidu.com')
-    #h.putheader('origin','http://sign.baidu.com')
-    #h.putheader('Referer','http://sign.baidu.com/')
-    #h.putheader('Cookie',userconf.sign_cookie)
+    h.putheader('Host','sign.baidu.com')
+    h.putheader('origin','http://sign.baidu.com')
+    h.putheader('Referer','http://sign.baidu.com/')
+    h.putheader('Cookie',usersign_conf.sign_cookie)
     h.endheaders()
     h.send(body)
     errcode, errmsg, headers = h.getreply()
     return h.file.read()
 
+
+def post_multipart2(host, selector, fields, files, blanks):
+    content_type, body = encode_multipart_formdata(fields, files, blanks)
+    h = httplib.HTTP(host)
+    h.putrequest('POST', selector)
+    h.putheader('content-type', content_type)
+    h.putheader('content-length', str(len(body)))
+    h.putheader('Connection','keep-alive')
+    h.putheader('Cache-Control','max-age=0')
+    h.putheader('Host','qa1.basic.baidu.com')
+    h.endheaders()
+    h.send(body)
+    errcode, errmsg, headers = h.getreply()
+    return h.file.read()
 
 def SignBaidu(file,para):
     #if file already signed,return
@@ -223,17 +242,17 @@ def SignBaidu(file,para):
     fields.append(('desc',sign_product))
     fields.append(('cert',signType))
     
-    files.append(('f1',file,comm.getFileBuf(file)))
+    #files.append(('f1',file,comm.getFileBuf(file)))
     #blanks = ['f2','f3','f4','f5','f6','f7','f8','f9']
-    #files.append(('file[]',file,comm.getFileBuf(file)))
+    files.append(('file[]',file,comm.getFileBuf(file)))
     #blanks = ['file[]','file[]','file[]','file[]']
     
     blanks = []
     
     digitalSign = ''
-    if signType == '1':
+    if signType == '2':
         digitalSign = 'baidu_cn'
-    elif signType == '2':
+    elif signType == '1':
         digitalSign = 'baidu_bj_netcom'
     elif signType == '3':
         digitalSign = 'baidu_jp'
@@ -264,18 +283,78 @@ def SignBaidu(file,para):
             raise SignBaiduException('Sign baidu official digital signature failed.')
     return
 
+def SignBaidu2(file,para):
+    #if file already signed,return
+    command = sign_conf.byp_bin_path + 'SignVerify.exe ' + file
+    ret = os.system(command.encode(sys.getfilesystemencoding()))
+    if ret == 0:
+        return
+    product = para[0]
+    signType = para[1]
+    sign_product = ''
+    if product == 'bdm':
+        sign_product = sign_conf.sign_file_product.encode(sys.getfilesystemencoding())
+    elif product == 'bdkv':
+        sign_product = sign_conf.kvsign_file_product.encode(sys.getfilesystemencoding())
+    file_path = file[0:file.rfind('\\')+1]
+    file_name = file[file.rfind('\\')+1:]
+    logging.info( 'Signning File ' + file + ' through connection to ' + sign_conf.local_cerf_addr)
+    files,fields = [],[]
+    fields.append(('desc',sign_product))
+    fields.append(('cert',signType))
+    
+    #files.append(('f1',file,comm.getFileBuf(file)))
+    #blanks = ['f2','f3','f4','f5','f6','f7','f8','f9']
+    files.append(('file',file,comm.getFileBuf(file)))
+    #blanks = ['file[]','file[]','file[]','file[]']
+    
+    blanks = []
+    
+    digitalSign = ''
+    if signType == '2':
+        digitalSign = 'baidu_cn'
+    elif signType == '1':
+        digitalSign = 'baidu_bj_netcom'
+    elif signType == '3':
+        digitalSign = 'baidu_jp'
+    
+    for i in range(0,10):
+        response = post_multipart2(sign_conf.local_cerf_addr,sign_conf.local_cerf_url,fields,files,blanks)
+        logging.info( response)
+        if response.find('failed') != -1:
+            continue
+        iStart = response.find('msg:') + 4
+        if iStart != 3:
+            part2 = response[iStart:]
+            urllib.urlretrieve(part2, file + '.sign')
+        
+        command = sign_conf.byp_bin_path + 'SignVerify.exe ' + file + '.sign ' + digitalSign
+        ret = os.system(command.encode(sys.getfilesystemencoding()))
+        if ret == 0:
+            shutil.move(file+'.sign', file)
+            break;
+        
+        if i == 9:
+            logging.info('Sign baidu official digital signature failed.')
+            print '\a\a\a\a\a\a\a\a\a\a\a\a\a\a\a\a\a\a\a\a\a\a\a\a\a\a\a\a\a\a\a\a\a\a\a\a\a\a\a\a\a\a'
+            f = open('c:\\sign_output.txt','a')
+            f.write("file sign baidu failed %s\r\n" % file)
+            f.close()
+            raise SignBaiduException('Sign baidu official digital signature failed.')
+    return
+
 def SignBaiduOfficial(path,ftype,product,excluded_dir = []):
     done = False
     signId = '0'
-    signConfFile = ''
+    signconfFile = ''
     logFile = ''
     if product == 'bdm':
-        signConfFile = sign_conf.sign_conf_file
+        signconfFile = sign_conf.sign_conf_file
         logFile = sign_conf.verify_log_file
     elif product == 'bdkv':
-        signConfFile = sign_conf.kvsign_conf_file
+        signconfFile = sign_conf.kvsign_conf_file
         logFile = sign_conf.kvverify_log_file
-    dom = xml.dom.minidom.parse(signConfFile)
+    dom = xml.dom.minidom.parse(signconfFile)
     root = dom.documentElement
     for node in root.childNodes:
         if node.nodeType != node.ELEMENT_NODE:
@@ -288,14 +367,14 @@ def SignBaiduOfficial(path,ftype,product,excluded_dir = []):
                 continue
             type = node.getAttribute('type')
             if type == 'baidu_cn':
-                signId = '1'
-            elif type == 'baidu_bj_netcom':
                 signId = '2'
+            elif type == 'baidu_bj_netcom':
+                signId = '1'
             elif type == 'baidu_jp':
                 signId = '3'
             #node.setAttribute('sign','0')
             done = True
-    writer = open(signConfFile,'w')
+    writer = open(signsign_conf.ile,'w')
     dom.writexml(writer)
     writer.close()
     
@@ -304,7 +383,7 @@ def SignBaiduOfficial(path,ftype,product,excluded_dir = []):
     #logging.info(ret)
     
     if done:
-        FileOperationWithExtraPara(path,SignBaidu,(product,signId),ftype,excluded_dir)
+        FileOperationWithExtraPara(path,SignBaidu2,(product,signId),ftype,excluded_dir)
 
 def loginSignServer(host):
     body = 'username=liuheng&password=Agnes880204&rememberMe=true&_rememberMe=on&_viaToken=on&lt=LT-272454-0F2jsAvArBEb1MbW1PoRnSoocCpCcO&execution=e1s1&_eventId=submit&submit='
@@ -352,7 +431,7 @@ def CheckFileUnexist(root,writer):
 
 
 def VerifyFileExist(path,ftype,product,logfile = '',configfile = '',excluded_dir = []):
-    confFile = ''
+    sign_conf.ile = ''
     logFile = ''
     if product == 'bdm':
         if logfile != '':
@@ -360,20 +439,20 @@ def VerifyFileExist(path,ftype,product,logfile = '',configfile = '',excluded_dir
         else:
             logFile = sign_conf.verify_log_file
         if configfile != '':
-            confFile = configfile
+            sign_conf.ile = configfile
         else:
-            confFile = sign_conf.exist_verify_file
+            sign_conf.ile = sign_conf.exist_verify_file
     elif product == 'bdkv':
         if logfile != '':
             logFile = logfile
         else:
             logFile = sign_conf.kvverify_log_file
         if configfile != '':
-            confFile = configfile
+            sign_conf.ile = configfile
         else:
-            confFile = sign_conf.kvexist_verify_file
+            sign_conf.ile = sign_conf.kvexist_verify_file
     
-    dom = xml.dom.minidom.parse(confFile)
+    dom = xml.dom.minidom.parse(sign_conf.ile)
     root = dom.documentElement
     writer = open(logFile,'a')
     writer.write('\n----------------Verify Files----------------\n')
@@ -585,7 +664,7 @@ def BaiduVerify(file,para):
 def VerifyBaiduSign(path,ftype,product,logfile = '',configfile = '',excluded_dir = []):
     done = False
     digitalSign = ''
-    signConfFile = ''
+    signconfFile = ''
     logFile = ''
     if product == 'bdm':
         if logfile != '':
@@ -593,19 +672,19 @@ def VerifyBaiduSign(path,ftype,product,logfile = '',configfile = '',excluded_dir
         else:
             logFile = sign_conf.verify_log_file
         if configfile != '':
-            signConfFile = configfile
+            signconfFile = configfile
         else:
-            signConfFile = sign_conf.sign_conf_file
+            signconfFile = sign_conf.sign_conf_file
     elif product == 'bdkv':
         if logfile != '':
             logFile = logfile
         else:
             logFile = sign_conf.kvverify_log_file
         if configfile != '':
-            signConfFile = configfile
+            signconfFile = configfile
         else:
-            signConfFile = sign_conf.kvsign_conf_file
-    dom = xml.dom.minidom.parse(signConfFile)
+            signconfFile = sign_conf.kvsign_conf.file
+    dom = xml.dom.minidom.parse(signconfFile)
     root = dom.documentElement
     for node in root.childNodes:
         if node.nodeType != node.ELEMENT_NODE:
@@ -619,7 +698,7 @@ def VerifyBaiduSign(path,ftype,product,logfile = '',configfile = '',excluded_dir
             digitalSign = node.getAttribute('type')
             #node.setAttribute('verify','0')
             done = True
-    writer = open(signConfFile,'w')
+    writer = open(signsign_conf.ile,'w')
     dom.writexml(writer)
     writer.close()
     
@@ -638,22 +717,22 @@ def GenFileList(file,para):
     writer.write(line)
 
 
-def GenFileVerify(path,ftype,product,conffile = ''):
-    confFile = ''
+def GenFileVerify(path,ftype,product,confFile = ''):
+    sign_conf.ile = ''
     if product == 'bdm':
-        if conffile != '':
-            confFile = conffile
+        if sign_conf.ile != '':
+            sign_conf.ile = sign_conf.ile
         else:
-            confFile = sign_conf.exist_verify_file
+            sign_conf.ile = sign_conf.exist_verify_file
     elif product == 'bdkv':
-        if conffile != '':
-            confFile = conffile
+        if sign_conf.ile != '':
+            sign_conf.ile = sign_conf.ile
         else:
-            confFile = sign_conf.kvexist_verify_file
+            sign_conf.ile = sign_conf.kvexist_verify_file
     writer = open(confFile,'w')
-    writer.write('<?xml version="1.0" ?><conf>\n')
+    writer.write('<?xml version="1.0" ?><sign_conf.\n')
     FileOperationWithExtraPara(path,GenFileList,(writer,path[path[:-1].rfind('\\')+1:]),ftype)
-    writer.write('</conf>')
+    writer.write('</sign_conf.')
     writer.close()
     
 def calcMd5(afile,para):
@@ -706,7 +785,7 @@ gen_rc_list                           - generate rc list
         return
 
     #init logging system, it's told logging is threadsafe, so do NOT need to sync
-    logging.basicConfig(format = '%(asctime)s - %(levelname)s: %(message)s', level=logging.DEBUG, stream = sys.stdout)
+    logging.basicconfig(format = '%(asctime)s - %(levelname)s: %(message)s', level=logging.DEBUG, stream = sys.stdout)
 
     argv[2] = argv[2].strip('"')
     if argv[2][-1] != '\\':
@@ -732,6 +811,8 @@ gen_rc_list                           - generate rc list
         FileOperation(argv[2],Sign,ftype,sign_conf.kvsign_excluded_dir)
     elif argv[1] == 'kvsign_kav':
         FileOperation(argv[2],SignKav,ftype,sign_conf.kvsign_kav_excluded_dir)
+    elif argv[1] == 'load_sign':
+        FileOperation(argv[2],LoadSign,ftype,sign_conf.kv_load_sign_excluded_dir)
     elif argv[1] == 'sign_baidu':
         SignBaiduOfficial(argv[2],ftype,'bdm',sign_conf.mgr_official_sign_excluded_dir)
     elif argv[1] == 'kvsign_baidu':

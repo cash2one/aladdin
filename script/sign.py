@@ -21,15 +21,15 @@ def main(argc, argv):
     try:
         done = False
         signId = '0'
-        confFile = ''
+        sign_conf.ile = ''
         excluded_dir = []
         if argv[1].lower() == 'bdm':
-            confFile = sign_conf.sign_conf_file
+            sign_conf.ile = sign_conf.sign_sign_conf.file
             excluded_dir = sign_conf.mgr_official_sign_excluded_dir
         elif argv[1].lower() == 'bdkv':
-            confFile = sign_conf.kvsign_conf_file
+            sign_conf.ile = sign_conf.kvsign_conf_file
             excluded_dir = sign_conf.kv_official_sign_excluded_dir
-        dom = xml.dom.minidom.parse(confFile)
+        dom = xml.dom.minidom.parse(sign_conf.ile)
         root = dom.documentElement
         for node in root.childNodes:
             if node.nodeType != node.ELEMENT_NODE:
@@ -42,14 +42,14 @@ def main(argc, argv):
                     continue
                 type = node.getAttribute('type')
                 if type == 'baidu_cn':
-                    signId = '1'
-                elif type == 'baidu_bj_netcom':
                     signId = '2'
+                elif type == 'baidu_bj_netcom':
+                    signId = '1'
                 elif type == 'baidu_jp':
                     signId = '3'
                 #node.setAttribute('sign','0')
                 done = True
-        writer = open(confFile,'w')
+        writer = open(sign_conf.ile,'w')
         dom.writexml(writer)
         writer.close()
         
@@ -58,7 +58,7 @@ def main(argc, argv):
         #print ret
         
         if done:
-            fileop.FileOperationWithExtraPara(argv[2],fileop.SignBaidu,(argv[1].lower(),signId),sign_conf.sign_file_exts.split(','),excluded_dir)
+            fileop.FileOperationWithExtraPara(argv[2],fileop.SignBaidu2,(argv[1].lower(),signId),sign_conf.sign_file_exts.split(','),excluded_dir)
     except fileop.SignBaiduException,e:
         print e
         raise e

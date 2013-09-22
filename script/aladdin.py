@@ -51,7 +51,7 @@ def buildPackage(softid, type):
     innerPackage = 'softsetup.exe'
     originalFileName = getSoftidFileName(softid)
     if originalFileName.lower().find('baiduplayernetsetup') != -1:
-        innerPackage = originalFileName
+        innerPackage = 'BaiduPlayerNetSetup_103.exe'
     
     #delete nsis folder
     command = 'del /Q /S ' + conf.task_pool_nsis_folder
@@ -308,6 +308,7 @@ def buildAladdinPackage(xmlFile, bDownload, bBuild, bindType, bForce, bAll, pack
     
     aladdin_update_list = []
     aladdin_maintain_list = []
+    xsoftList = []
     try:
         bdlist_file = open(i_packInfoFile, 'r')
         for line in bdlist_file.readlines():
@@ -317,11 +318,13 @@ def buildAladdinPackage(xmlFile, bDownload, bBuild, bindType, bForce, bAll, pack
         logging.error('error when get softid maintain list')
         logging.error(e)
         return
+
     try:
         if xpackInfoFile != '':
             xbdlist_file = open(xpackInfoFile, 'r')
             for line in xbdlist_file.readlines():
                 item = line.strip('\r\n \t')
+                xsoftList.append(item)
                 if item in aladdin_maintain_list:
                     aladdin_maintain_list.remove(item)
             xbdlist_file.close()
@@ -337,6 +340,7 @@ def buildAladdinPackage(xmlFile, bDownload, bBuild, bindType, bForce, bAll, pack
             aladdin_maintain_list.append(item)
     if o_xsoftId != '':
         for item in o_xsoftId.split(';'):
+            xsoftList.append(item)
             if item in aladdin_maintain_list:
                 aladdin_maintain_list.remove(item)
     
@@ -362,6 +366,9 @@ def buildAladdinPackage(xmlFile, bDownload, bBuild, bindType, bForce, bAll, pack
             #if not in maintain list, ignore
             if (softid not in aladdin_maintain_list) and (not bAll):
                 #logging.info('%s is not in the maintain list, ignored' % softid)
+                continue
+            if softid in xsoftList:
+                #logging.info('%s is in ignored list, ignored' % softid)
                 continue
             
             logging.info('parsing softid %s' % softid)
@@ -640,6 +647,7 @@ def buildAladdinPackage(xmlFile, bDownload, bBuild, bindType, bForce, bAll, pack
     except Exception, e:
         logging.error('error occers while parsing aladdin full xml')
         logging.error(e)
+        print xsoftList
         return
 
 def main(argc, argv):
