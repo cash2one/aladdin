@@ -698,7 +698,7 @@ def VerifyBaiduSign(path,ftype,product,logfile = '',configfile = '',excluded_dir
             digitalSign = node.getAttribute('type')
             #node.setAttribute('verify','0')
             done = True
-    writer = open(signsign_conf.ile,'w')
+    writer = open(signconfFile,'w')
     dom.writexml(writer)
     writer.close()
     
