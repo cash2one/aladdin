@@ -21,6 +21,7 @@ import datetime
 import rename_package
 import sign
 import comm
+import codecs
 
 class SoftIDError(Exception):
     def __str__(self):
@@ -120,6 +121,18 @@ def buildPackage(softid, type):
         command = 'xcopy /Y /E /S ' + resFolder + ' ' + conf.task_pool_nsis_folder
         logging.info(command)
         os.system(command.encode(sys.getfilesystemencoding()))
+
+        #change original filename in nsi file
+        aladdinNsiFile = conf.task_pool_nsis_folder + 'stub\\aladin.nsi'
+        infile = codecs.open(aladdinNsiFile,'r', encoding='utf-16-le')
+        lines = infile.readlines()
+        infile.close()
+        for index in range(len(lines)):
+            if lines[index].find('!define PRODUCT_FILENAME') != -1:
+                lines[index] = '!define PRODUCT_FILENAME "' + getSoftidFileName(softid) + '"\r\n'
+        outfile = codecs.open(aladdinNsiFile, 'w', encoding='utf-16-le')
+        outfile.writelines(lines)
+        outfile.close()
         
         #build
         command = nsis_exe + ' /X"SetCompressor /FINAL /SOLID lzma" ' + conf.task_pool_nsis_folder + 'stub\\aladin.nsi'
@@ -289,13 +302,43 @@ def generateUpdateList(aladdin_update_list, type):
             os.mkdir(conf.aladdin_update_pool_folder + 'changelist')
         comm.saveFile(conf.aladdin_update_pool_folder + 'changelist\\' + clname, ctx)
 
-def copyPackageToArchiveFolder():
+def copyPackageToArchiveFolder(aladdin_update_list, type, bRemoveOld):
+    #clean old packages in archive folder
+    if bRemoveOld:
+        for item in type.split(';'):
+            if item.lower() == 'baidusd_nobind' or item.lower() == 'qqmgr_nobind':
+                for softid in aladdin_update_list:
+                    #unbind
+                    command = 'rd /Q /S ' + conf.aladdin_archive_folder + 'unbind\\' + softid
+                    logging.info(command)
+                    os.system(command)
+                    #src
+                    command = 'rd /Q /S ' + conf.aladdin_archive_folder + 'src\\' + softid
+                    logging.info(command)
+                    os.system(command)
+            elif item.lower() == 'baidusd' or item.lower() == 'qqmgr':
+                for softid in aladdin_update_list:
+                    #bind
+                    command = 'rd /Q /S ' + conf.aladdin_archive_folder + 'bind\\' + softid
+                    logging.info(command)
+                    os.system(command)
+                    #bind1
+                    command = 'rd /Q /S ' + conf.aladdin_archive_folder + 'bind1\\' + softid
+                    logging.info(command)
+                    os.system(command)
+                    #bind2
+                    #command = 'rd /Q /S ' + conf.aladdin_archive_folder + 'bind2\\' + softid
+                    #logging.info(command)
+                    #os.system(command)
+                    #src
+                    command = 'rd /Q /S ' + conf.aladdin_archive_folder + 'src\\' + softid
+                    logging.info(command)
+                    os.system(command)
     command = conf.robo_copy_exe + ' ' + conf.aladdin_installer_folder[:-1] + ' ' + conf.aladdin_archive_folder + ' /E /XO /fft /W:0 '
     logging.info(command)
     os.system(command)
     
-def buildAladdinPackage(xmlFile, bDownload, bBuild, bindType, bForce, bAll, packInfoFile, o_softId, bCopy, o_xsoftId, xpackInfoFile, bNoBuild, bNoCopyToUpdate):
-    error_summary = []
+def buildAladdinPackage(xmlFile, bDownload, bBuild, bindType, bForce, bAll, packInfoFile, o_softId, bCopy, o_xsoftId, xpackInfoFile, bNoBuild, bNoCopyToUpdate, bRemoveOld):
     bCleanArchive = False
     
     #always clean update pool folder
@@ -642,7 +685,7 @@ def buildAladdinPackage(xmlFile, bDownload, bBuild, bindType, bForce, bAll, pack
             #clean update pool folder
             if bCleanArchive:
                 cleanArchiveFolder()
-            copyPackageToArchiveFolder()
+            copyPackageToArchiveFolder(aladdin_update_list, bindType, bRemoveOld)
             
     except Exception, e:
         logging.error('error occers while parsing aladdin full xml')
@@ -673,6 +716,8 @@ def main(argc, argv):
     parser.add_argument('-c', '--copyto-archive', action='store_true', default=False, dest='bCopy', help='also copy to archive folder')
     parser.add_argument('-B', '--nobuild-when-update', action='store_true', default=False, dest='bNoBuild', help='not build when update')
     parser.add_argument('-U', '--nocopy-to-update', action='store_true', default=False, dest='bCopyUpdate', help='not copy to update folder')
+    parser.add_argument('-R', '--remove-old-pkgs', action='store_true', default=False, dest='bRemoveOldPkg', help='remove old packages in archive folder')
+
     args = parser.parse_args()
     logging.info('-----------------------------------------')
     logging.info('xml-file : ' + args.xmlFile)
@@ -688,10 +733,11 @@ def main(argc, argv):
     logging.info('copyto-archive : ' + str(args.bCopy))
     logging.info('nobuild-when-update : ' + str(args.bNoBuild))
     logging.info('nocopy-to-update : ' + str(args.bCopyUpdate))
+    logging.info('remove-old-packages : ' + str(args.bRemoveOldPkg))
     logging.info('-----------------------------------------')
     
     
-    buildAladdinPackage(args.xmlFile, args.bDownload, args.bBuild, args.bindType, args.bForce, args.bAll, args.packInfoFile, args.softId, args.bCopy, args.xsoftId, args.xpackInfoFile, args.bNoBuild, args.bCopyUpdate)
+    buildAladdinPackage(args.xmlFile, args.bDownload, args.bBuild, args.bindType, args.bForce, args.bAll, args.packInfoFile, args.softId, args.bCopy, args.xsoftId, args.xpackInfoFile, args.bNoBuild, args.bCopyUpdate, args.bRemoveOldPkg)
 
 if "__main__" == __name__:
     sys.exit(main(len(sys.argv),sys.argv))
