@@ -64,6 +64,7 @@ task_pool_folder = '..\\taskpool\\'
 task_pool_nsis_folder = '..\\taskpool\\nsis\\'
 
 sharemem_tools_folder = '..\\..\\sharemem\\basic\\tools\\'
+v1020_tools_folder = '..\\..\\bdkv_v1020_original\\basic\\tools\\'
 
 #ftp config
 ftp_host = 'ftp://10.52.175.51'

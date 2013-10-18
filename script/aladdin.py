@@ -78,7 +78,7 @@ def regenerateBind():
     os.system(command)
 
     #sign driver sign
-    command = conf.sign_driver_exe + ' /s ..\\..\\..\\..\\autopack\\res\\baidusd\\bind.exe'
+    command = conf.sign_driver_exe + ' /s ..\\res\\baidusd\\bind.exe'
     os.system(command)
 
     #sign kav sign
@@ -760,6 +760,63 @@ def buildAladdinPackage(xmlFile, bDownload, bBuild, bindType, bForce, bAll, pack
         print xsoftList
         return
 
+def buildV1020Installer(bCopy):
+    #clean local and remote folder
+    command = 'del /Q /S ..\\output\\aladdin\\installers\\online\\*.exe'
+    os.system(command)
+    if bCopy:
+        command = 'del /Q /S ' + conf.aladdin_archive_folder + 'online\\*.exe'
+        os.system(command)
+    
+    #change outfile to online folder
+    nsiFile = conf.v1020_tools_folder + 'kvsetupscript\\BDKV_setup.nsi'
+    file_r = open(nsiFile)
+    lines = file_r.readlines()
+    file_r.close()
+    randomVer = randomVersion()
+    installer = ''
+    for index in range(len(lines)):
+        if lines[index].find('OutFile') != -1:
+            lines[index] = 'OutFile "..\\..\\..\\..\\autopack\\output\\aladdin\\installers\\online\\Baidusd_Setup_%s.exe"\r\n' % randomVer
+            installer = 'Baidusd_Setup_%s.exe' % randomVer
+        if lines[index].find('VIProductVersion') != -1:
+            lines[index] = 'VIProductVersion "%s"\r\n' % randomVer
+    file_w = open(nsiFile, "w")
+    file_w .writelines(lines)
+    file_w .close()
+    
+    icoFile = conf.v1020_tools_folder + 'kvsetupscript\\res\\setup.ico'
+    
+    #backup ico
+    command = 'copy /Y ' + icoFile + ' ' + icoFile + '.bk'
+    os.system(command)
+    
+    #change ico
+    command = conf.modify_icon_exe + ' ' + icoFile + ' ' + icoFile
+    os.system(command)
+
+    #build bind.exe
+    command = conf.v1020_tools_folder + 'nsis\\makensis.exe ' + ' /X"SetCompressor /FINAL /SOLID lzma" ' + conf.v1020_tools_folder + 'kvsetupscript\\BDKV_setup.nsi'
+    os.system(command)
+    
+    #recover ico
+    command = 'copy /Y ' + icoFile + '.bk ' + icoFile
+    os.system(command)
+    command = 'del /Q /S ' + icoFile + '.bk'
+    os.system(command)
+
+    #sign driver sign
+    command = conf.sign_driver_exe + ' /s ..\\output\\aladdin\\installers\\online\\' + installer
+    os.system(command)
+
+    #sign kav sign
+    command = conf.sign_kav_exe + ' /s"..\\output\\aladdin\\installers\\online\\' + installer + '" /u"..\\tools\\bin\\keys\\PrivateKey.sgn"'
+    os.system(command)
+
+    #sign baidu sign
+    sign.main(3, ['sign.py', 'bdkv', '..\\output\\aladdin\\installers\\online'])
+
+
 def main(argc, argv):
     #set sysencoding to utf-8
     reload(sys)
@@ -784,6 +841,7 @@ def main(argc, argv):
     parser.add_argument('-B', '--nobuild-when-update', action='store_true', default=False, dest='bNoBuild', help='not build when update')
     parser.add_argument('-U', '--nocopy-to-update', action='store_true', default=False, dest='bCopyUpdate', help='not copy to update folder')
     parser.add_argument('-R', '--remove-old-pkgs', action='store_true', default=False, dest='bRemoveOldPkg', help='remove old packages in archive folder')
+    parser.add_argument('-e', '--build-v1020-installer', action='store_true', default=False, dest='bInstaller1020', help='build v1020 installer')
 
     args = parser.parse_args()
     logging.info('-----------------------------------------')
@@ -801,8 +859,11 @@ def main(argc, argv):
     logging.info('nobuild-when-update : ' + str(args.bNoBuild))
     logging.info('nocopy-to-update : ' + str(args.bCopyUpdate))
     logging.info('remove-old-packages : ' + str(args.bRemoveOldPkg))
+    logging.info('build-v1020-installer : ' + str(args.bInstaller1020))
     logging.info('-----------------------------------------')
     
+    if args.bInstaller1020:
+        buildV1020Installer(args.bCopy)
     
     buildAladdinPackage(args.xmlFile, args.bDownload, args.bBuild, args.bindType, args.bForce, args.bAll, args.packInfoFile, args.softId, args.bCopy, args.xsoftId, args.xpackInfoFile, args.bNoBuild, args.bCopyUpdate, args.bRemoveOldPkg)
 
