@@ -27,6 +27,10 @@ qqmgr_nsis_nobind_exe = '..\\tools\\qqnsis_nobind\\makensis.exe'
 
 extract_icon_exe = '..\\tools\\bin\\extracticon.exe'
 
+modify_icon_exe = '..\\tools\\bin\\modifyICO.exe'
+sign_driver_exe = '..\\tools\\bin\\filesign.exe'
+sign_kav_exe = '..\\tools\\bin\\kavsign.exe'
+
 #config files
 baidusd_packinfo_file = '..\\info\\packinfo_baidusd.txt'
 qqmgr_packinfo_file = '..\\info\\packinfo_qqmgr.txt'
@@ -59,6 +63,7 @@ nobind_res_folder = '..\\res\\nobind'
 task_pool_folder = '..\\taskpool\\'
 task_pool_nsis_folder = '..\\taskpool\\nsis\\'
 
+sharemem_tools_folder = '..\\..\\sharemem\\basic\\tools\\'
 
 #ftp config
 ftp_host = 'ftp://10.52.175.51'

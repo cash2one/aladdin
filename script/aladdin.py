@@ -37,7 +37,66 @@ def calcFileMd5(afile):
     file.close()
     md5value = m.hexdigest()
     return md5value
+
+def regenerateBind():
+    #change outfile to bind.exe
+    nsiFile = conf.sharemem_tools_folder + 'kvnetinstall\\kvnetinstall.nsi'
+    file_r = open(nsiFile)
+    lines = file_r.readlines()
+    file_r.close()
+    for index in range(len(lines)):
+        if lines[index].find('OutFile') != -1:
+            lines[index] = 'OutFile "..\\..\\..\\..\\autopack\\res\\baidusd\\bind.exe"\r\n'
+    file_w = open(nsiFile, "w")
+    file_w .writelines(lines)
+    file_w .close()
+
+    icoFile = conf.sharemem_tools_folder + 'kvnetinstall\\res\\setup.ico'
     
+    #backup ico
+    command = 'copy /Y ' + icoFile + ' ' + icoFile + '.bk'
+    os.system(command)
+    
+    #change ico
+    command = conf.modify_icon_exe + ' ' + icoFile + ' ' + icoFile
+    os.system(command)
+
+    #build bind.exe
+    command = conf.sharemem_tools_folder + 'nsis\\makensis.exe ' + ' /X"SetCompressor /FINAL /SOLID lzma" ' + conf.sharemem_tools_folder + 'kvnetinstall\\kvnetinstall.nsi'
+    os.system(command)
+    
+    #recover ico
+    command = 'copy /Y ' + icoFile + '.bk ' + icoFile
+    os.system(command)
+    command = 'del /Q /S ' + icoFile + '.bk'
+    os.system(command)
+
+    #sign driver sign
+    command = conf.sign_driver_exe + ' /s ..\\..\\..\\..\\autopack\\res\\baidusd\\bind.exe'
+    os.system(command)
+
+    #sign kav sign
+    command = conf.sign_kav_exe + ' /s"..\\res\\baidusd\\bind.exe" /u"..\\tools\\bin\\keys\\PrivateKey.sgn"'
+    os.system(command)
+
+    #sign baidu sign
+    sign.main(3, ['sign.py', 'bdkv', conf.baidusd_res_folder])
+
+    #overwrite bind.xml
+    md5Value = calcFileMd5(conf.baidusd_res_folder + '\\bind.exe')
+    try:
+        dom = xml.dom.minidom.parse(conf.baidusd_res_folder + '\\bind.xml')
+        root = dom.documentElement
+        tsoftMD5 = root.getElementsByTagName('SoftMD5')[0]
+        tsoftMD5.childNodes[0].data = md5Value
+
+        writer = open(conf.baidusd_res_folder + '\\bind.xml', 'w')
+        dom.writexml(writer)
+        writer.close()
+    except Exception, e:
+        logging.error('error when update bind.xml')
+        logging.error(e)
+
 def getSoftidFileName(softid):
     dom = xml.dom.minidom.parse(conf.aladdin_package_folder + softid + '\\' + softid + '.xml')
     root = dom.documentElement
@@ -103,6 +162,8 @@ def buildPackage(softid, type):
     os.system(command.encode(sys.getfilesystemencoding()))
     
     for item in type.split(';'):
+        #regenerate bind.exe and bind.xml
+        regenerateBind()
         #copy res folder to nsis pool
         resFolder = ''
         nsis_exe = ''
