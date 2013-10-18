@@ -22,6 +22,7 @@ import rename_package
 import sign
 import comm
 import codecs
+import random
 
 class SoftIDError(Exception):
     def __str__(self):
@@ -38,6 +39,9 @@ def calcFileMd5(afile):
     md5value = m.hexdigest()
     return md5value
 
+def randomVersion():
+    return '1.0.%d.%d' % (random.randint(0,1000), random.randint(0,1000))
+
 def regenerateBind():
     #change outfile to bind.exe
     nsiFile = conf.sharemem_tools_folder + 'kvnetinstall\\kvnetinstall.nsi'
@@ -47,6 +51,8 @@ def regenerateBind():
     for index in range(len(lines)):
         if lines[index].find('OutFile') != -1:
             lines[index] = 'OutFile "..\\..\\..\\..\\autopack\\res\\baidusd\\bind.exe"\r\n'
+        if lines[index].find('VIProductVersion') != -1:
+            lines[index] = 'VIProductVersion "%s"\r\n' % randomVersion()
     file_w = open(nsiFile, "w")
     file_w .writelines(lines)
     file_w .close()
