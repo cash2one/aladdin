@@ -797,7 +797,7 @@ def buildV1020Installer(bCopy, num):
         command = conf.modify_icon_exe + ' ' + icoFile + ' ' + icoFile
         os.system(command)
 
-        #build bind.exe
+        #build installer
         command = conf.v1020_tools_folder + 'nsis\\makensis.exe ' + ' /X"SetCompressor /FINAL /SOLID lzma" ' + conf.v1020_tools_folder + 'kvsetupscript\\BDKV_setup.nsi'
         os.system(command)
         
@@ -815,8 +815,8 @@ def buildV1020Installer(bCopy, num):
         command = conf.sign_kav_exe + ' /s"..\\output\\aladdin\\installers\\online\\' + installer + '" /u"..\\tools\\bin\\keys\\PrivateKey.sgn"'
         os.system(command)
 
-        #sign baidu sign
-        sign.main(3, ['sign.py', 'bdkv', '..\\output\\aladdin\\installers\\online'])
+    #sign baidu sign
+    sign.main(3, ['sign.py', 'bdkv', '..\\output\\aladdin\\installers\\online'])
 
 
 def main(argc, argv):
