@@ -108,7 +108,7 @@ def getSoftidFileName(softid):
     root = dom.documentElement
     return root.getElementsByTagName('FileName')[0].childNodes[0].data
 
-def buildPackage(softid, type):
+def buildPackage(softid, type, bRepack):
     '''
     type
         baidusd, qqmgr, nobind
@@ -169,7 +169,8 @@ def buildPackage(softid, type):
     
     for item in type.split(';'):
         #regenerate bind.exe and bind.xml
-        regenerateBind()
+        if bRepack:
+            regenerateBind()
         #copy res folder to nsis pool
         resFolder = ''
         nsis_exe = ''
@@ -405,7 +406,7 @@ def copyPackageToArchiveFolder(aladdin_update_list, type, bRemoveOld):
     logging.info(command)
     os.system(command)
     
-def buildAladdinPackage(xmlFile, bDownload, bBuild, bindType, bForce, bAll, packInfoFile, o_softId, bCopy, o_xsoftId, xpackInfoFile, bNoBuild, bNoCopyToUpdate, bRemoveOld):
+def buildAladdinPackage(xmlFile, bDownload, bBuild, bindType, bForce, bAll, packInfoFile, o_softId, bCopy, o_xsoftId, xpackInfoFile, bNoBuild, bNoCopyToUpdate, bRemoveOld, bRepack):
     bCleanArchive = False
     
     #always clean update pool folder
@@ -715,7 +716,7 @@ def buildAladdinPackage(xmlFile, bDownload, bBuild, bindType, bForce, bAll, pack
                     #mark upadte
                     aladdin_update_list.append(softid)
                     
-                    buildPackage(softid, bindType)
+                    buildPackage(softid, bindType, bRepack)
                     signPackage(str(softid), bindType)
                     renamePackage(str(softid), bindType)
                     if not bNoCopyToUpdate:
@@ -739,7 +740,7 @@ def buildAladdinPackage(xmlFile, bDownload, bBuild, bindType, bForce, bAll, pack
                 #mark upadte
                 aladdin_update_list.append(softid)
                 
-                buildPackage(softid, bindType)
+                buildPackage(softid, bindType, bRepack)
                 signPackage(str(softid), bindType)
                 renamePackage(str(softid), bindType)
                 if not bNoCopyToUpdate:
@@ -845,6 +846,7 @@ def main(argc, argv):
     parser.add_argument('-R', '--remove-old-pkgs', action='store_true', default=False, dest='bRemoveOldPkg', help='remove old packages in archive folder')
     parser.add_argument('-e', '--build-v1020-installer', action='store_true', default=False, dest='bInstaller1020', help='build v1020 installer')
     parser.add_argument('-n', '--numberof-v1020-installers', action='store', default='1', dest='numInstallers', help='number of v1020 installers')
+    parser.add_argument('-r', '--repack', action='store_true', default=False, dest='bRepack', help='repack bind.exe')
 
     args = parser.parse_args()
     logging.info('-----------------------------------------')
@@ -864,12 +866,13 @@ def main(argc, argv):
     logging.info('remove-old-packages : ' + str(args.bRemoveOldPkg))
     logging.info('build-v1020-installer : ' + str(args.bInstaller1020))
     logging.info('number-v1020-installers : ' + args.numInstallers)
+    logging.info('repack bind.exe : ' + str(args.bRepack))
     logging.info('-----------------------------------------')
     
     if args.bInstaller1020:
         buildV1020Installer(args.bCopy, args.numInstallers)
     
-    buildAladdinPackage(args.xmlFile, args.bDownload, args.bBuild, args.bindType, args.bForce, args.bAll, args.packInfoFile, args.softId, args.bCopy, args.xsoftId, args.xpackInfoFile, args.bNoBuild, args.bCopyUpdate, args.bRemoveOldPkg)
+    buildAladdinPackage(args.xmlFile, args.bDownload, args.bBuild, args.bindType, args.bForce, args.bAll, args.packInfoFile, args.softId, args.bCopy, args.xsoftId, args.xpackInfoFile, args.bNoBuild, args.bCopyUpdate, args.bRemoveOldPkg, args.bRepack)
 
 if "__main__" == __name__:
     sys.exit(main(len(sys.argv),sys.argv))
