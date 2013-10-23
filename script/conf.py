@@ -31,6 +31,8 @@ modify_icon_exe = '..\\tools\\bin\\modifyICO.exe'
 sign_driver_exe = '..\\tools\\bin\\filesign.exe'
 sign_kav_exe = '..\\tools\\bin\\kavsign.exe'
 
+modify_pe_exe = '..\\tools\\bin\\modifyPE.exe'
+
 #config files
 baidusd_packinfo_file = '..\\info\\packinfo_baidusd.txt'
 qqmgr_packinfo_file = '..\\info\\packinfo_qqmgr.txt'

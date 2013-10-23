@@ -77,6 +77,10 @@ def regenerateBind():
     command = 'del /Q /S ' + icoFile + '.bk'
     os.system(command)
 
+    #modify bind pe
+    command = conf.modify_pe_exe + ' ..\\res\\baidusd\\bind.exe'
+    os.system(command)
+
     #sign driver sign
     command = conf.sign_driver_exe + ' /s ..\\res\\baidusd\\bind.exe'
     os.system(command)
@@ -698,7 +702,7 @@ def buildAladdinPackage(xmlFile, bDownload, bBuild, bindType, bForce, bAll, pack
             #clean update pool folder
             if bCleanArchive:
                 cleanArchiveFolder(subfolder)
-            copyPackageToArchiveFolder(aladdin_update_list, bindType, bRemoveOld)
+            copyPackageToArchiveFolder(aladdin_update_list, bindType, bRemoveOld, subfolder)
             
     except Exception, e:
         logging.error('error occers while parsing aladdin full xml')
