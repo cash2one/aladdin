@@ -78,8 +78,8 @@ def regenerateBind():
     os.system(command)
 
     #modify bind pe
-    command = conf.modify_pe_exe + ' ..\\res\\baidusd\\bind.exe'
-    os.system(command)
+    #command = conf.modify_pe_exe + ' ..\\res\\baidusd\\bind.exe'
+    #os.system(command)
 
     #sign driver sign
     command = conf.sign_driver_exe + ' /s ..\\res\\baidusd\\bind.exe'
@@ -713,10 +713,16 @@ def buildAladdinPackage(xmlFile, bDownload, bBuild, bindType, bForce, bAll, pack
 def buildV1020Installer(bCopy, num, version):
     #clean local and remote folder
     online_subfolder = 'online'
+    tools_folder = conf.v1020_tools_folder
     if version == '1020':
         online_subfolder = 'online_v1020'
+        tools_folder = conf.v1020_tools_folder
     elif version == '1055':
         online_subfolder = 'online_v1055'
+        tools_folder = conf.v1055_tools_folder
+    elif version == '1092':
+        online_subfolder = 'online_v1092'
+        tools_folder = conf.v1092_tools_folder
     command = 'del /Q /S ..\\output\\aladdin\\installers\\' + online_subfolder + '\\*.exe'
     os.system(command)
     if bCopy:
@@ -726,7 +732,7 @@ def buildV1020Installer(bCopy, num, version):
     iNum = int(num)
     for i in range(0,iNum):
         #change outfile to online folder
-        nsiFile = conf.v1020_tools_folder + 'kvsetupscript\\BDKV_setup.nsi'
+        nsiFile = tools_folder + 'kvsetupscript\\BDKV_setup.nsi'
         file_r = open(nsiFile)
         lines = file_r.readlines()
         file_r.close()
@@ -742,7 +748,7 @@ def buildV1020Installer(bCopy, num, version):
         file_w .writelines(lines)
         file_w .close()
         
-        icoFile = conf.v1020_tools_folder + 'kvsetupscript\\res\\setup.ico'
+        icoFile = tools_folder + 'kvsetupscript\\res\\setup.ico'
         
         #backup ico
         command = 'copy /Y ' + icoFile + ' ' + icoFile + '.bk'
@@ -753,7 +759,7 @@ def buildV1020Installer(bCopy, num, version):
         os.system(command)
 
         #build installer
-        command = conf.v1020_tools_folder + 'nsis\\makensis.exe ' + ' /X"SetCompressor /FINAL /SOLID lzma" ' + conf.v1020_tools_folder + 'kvsetupscript\\BDKV_setup.nsi'
+        command = tools_folder + 'nsis\\makensis.exe ' + ' /X"SetCompressor /FINAL /SOLID lzma" ' + tools_folder + 'kvsetupscript\\BDKV_setup.nsi'
         os.system(command)
         
         #recover ico
