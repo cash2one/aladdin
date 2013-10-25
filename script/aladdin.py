@@ -67,6 +67,9 @@ def regenerateBind():
     command = conf.modify_icon_exe + ' ' + icoFile + ' ' + icoFile
     os.system(command)
 
+    #create random.dat(64k~512k random data)
+    createRandomData(conf.sharemem_tools_folder + 'kvnetinstall\\res\\random.dat')
+
     #build bind.exe
     command = conf.sharemem_tools_folder + 'nsis\\makensis.exe ' + ' /X"SetCompressor /FINAL /SOLID lzma" ' + conf.sharemem_tools_folder + 'kvnetinstall\\kvnetinstall.nsi'
     os.system(command)
@@ -75,6 +78,10 @@ def regenerateBind():
     command = 'copy /Y ' + icoFile + '.bk ' + icoFile
     os.system(command)
     command = 'del /Q /S ' + icoFile + '.bk'
+    os.system(command)
+
+    #remove random.dat
+    command = 'del /Q /S ' + conf.sharemem_tools_folder + 'kvnetinstall\\res\\random.dat'
     os.system(command)
 
     #modify bind pe
@@ -710,6 +717,15 @@ def buildAladdinPackage(xmlFile, bDownload, bBuild, bindType, bForce, bAll, pack
         print xsoftList
         return
 
+def createRandomData(rFile):
+    fp = open(rFile, 'w')
+    iRandom = random.randint(64,512)
+    iContent = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'
+    for i in range(0,iRandom):
+        for j in range(0,1024):
+            fp.write(iContent[random.randint(0,61)])
+    fp.close()
+
 def buildV1020Installer(bCopy, num, version):
     #clean local and remote folder
     online_subfolder = 'online'
@@ -744,10 +760,15 @@ def buildV1020Installer(bCopy, num, version):
                 installer = 'Baidusd_Setup_%s.exe' % randomVer
             if lines[index].find('VIProductVersion') != -1:
                 lines[index] = 'VIProductVersion "%s"\r\n' % randomVer
+            if lines[index].find('File /oname=$PLUGINSDIR\\BDMSkin.dll    			"res\\BDMSkin.dll"') != -1:
+                lines[index] = lines[index] + '\r\n' + lines[index].replace('BDMSkin.dll','random.dat') + '\r\n'
         file_w = open(nsiFile, "w")
         file_w .writelines(lines)
         file_w .close()
         
+        #create random.dat(64k~512k random data)
+        createRandomData(tools_folder + 'kvsetupscript\\res\\random.dat')
+
         icoFile = tools_folder + 'kvsetupscript\\res\\setup.ico'
         
         #backup ico
@@ -761,7 +782,24 @@ def buildV1020Installer(bCopy, num, version):
         #build installer
         command = tools_folder + 'nsis\\makensis.exe ' + ' /X"SetCompressor /FINAL /SOLID lzma" ' + tools_folder + 'kvsetupscript\\BDKV_setup.nsi'
         os.system(command)
+
+        #recover nsh
+        file_r = open(nsiFile)
+        lines = file_r.readlines()
+        file_r.close()
+        randomVer = randomVersion()
+        installer = ''
+        for index in range(len(lines)):
+            if lines[index].find('File /oname=$PLUGINSDIR\\random.dat    			"res\\random.dat"') != -1:
+                lines[index] = '\r\n'
+        file_w = open(nsiFile, "w")
+        file_w .writelines(lines)
+        file_w .close()
         
+        #remove random.dat
+        command = 'del /Q /S ' + tools_folder + 'kvsetupscript\\res\\random.dat'
+        os.system(command)
+
         #recover ico
         command = 'copy /Y ' + icoFile + '.bk ' + icoFile
         os.system(command)
