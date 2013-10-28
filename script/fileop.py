@@ -285,7 +285,7 @@ def SignBaidu(file,para):
 
 def SignBaidu2(file,para):
     #if file already signed,return
-    command = sign_conf.byp_bin_path + 'SignVerify.exe ' + file
+    command = sign_conf.byp_bin_path + 'SignVerify.exe ' + file + ' baidu_bj_netcom'
     ret = os.system(command.encode(sys.getfilesystemencoding()))
     if ret == 0:
         return

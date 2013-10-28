@@ -23,6 +23,7 @@ import sign
 import comm
 import codecs
 import random
+import struct
 
 class SoftIDError(Exception):
     def __str__(self):
@@ -40,7 +41,7 @@ def calcFileMd5(afile):
     return md5value
 
 def randomVersion():
-    return '1.0.%d.%d' % (random.randint(0,1000), random.randint(0,1000))
+    return '1.0.%d.%d' %(random.randint(0,100), random.randint(0,500))
 
 def regenerateBind():
     #change outfile to bind.exe
@@ -98,6 +99,12 @@ def regenerateBind():
 
     #sign baidu sign
     sign.main(3, ['sign.py', 'bdkv', conf.baidusd_res_folder])
+
+    #auto modify last byte of bind.exe
+    fp = open('..\\res\\baidusd\\bind.exe', 'r+b')
+    fp.seek(-1, os.SEEK_END)
+    fp.write(struct.pack('c', chr(random.randint(1,255))))
+    fp.close()
 
     #overwrite bind.xml
     md5Value = calcFileMd5(conf.baidusd_res_folder + '\\bind.exe')
