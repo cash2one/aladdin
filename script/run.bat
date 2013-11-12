@@ -42,4 +42,28 @@ aladdin.py -bcrRt baidusd -s 15726 -g bind9
 aladdin.py -bcRt baidusd -g bind9
 aladdin.py -bcRt baidusd -p ..\info\95_aladin_id.txt -P ..\info\ignored.txt -g bind9
 
+aladdin.py -bcrRt baidusd -s 15726 -g bind10
+aladdin.py -bcRt baidusd -g bind10
+aladdin.py -bcRt baidusd -p ..\info\95_aladin_id.txt -P ..\info\ignored.txt -g bind10
+
+aladdin.py -bcrRt baidusd -s 15726 -g bind11
+aladdin.py -bcRt baidusd -g bind11
+aladdin.py -bcRt baidusd -p ..\info\95_aladin_id.txt -P ..\info\ignored.txt -g bind11
+
+aladdin.py -bcrRt baidusd -s 15726 -g bind12
+aladdin.py -bcRt baidusd -g bind12
+aladdin.py -bcRt baidusd -p ..\info\95_aladin_id.txt -P ..\info\ignored.txt -g bind12
+
+aladdin.py -bcrRt baidusd -s 15726 -g bind13
+aladdin.py -bcRt baidusd -g bind13
+aladdin.py -bcRt baidusd -p ..\info\95_aladin_id.txt -P ..\info\ignored.txt -g bind13
+
+aladdin.py -bcrRt baidusd -s 15726 -g bind14
+aladdin.py -bcRt baidusd -g bind14
+aladdin.py -bcRt baidusd -p ..\info\95_aladin_id.txt -P ..\info\ignored.txt -g bind14
+
+aladdin.py -bcrRt baidusd -s 15726 -g bind15
+aladdin.py -bcRt baidusd -g bind15
+aladdin.py -bcRt baidusd -p ..\info\95_aladin_id.txt -P ..\info\ignored.txt -g bind15
+
 goto loop
