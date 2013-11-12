@@ -24,6 +24,7 @@ import comm
 import codecs
 import random
 import struct
+import tempfile
 
 class SoftIDError(Exception):
     def __str__(self):
@@ -44,6 +45,20 @@ def randomVersion():
     return '1.0.%d.%d' %(random.randint(0,100), random.randint(0,500))
 
 def regenerateBind():
+    #update folder first
+    command = 'svn update --non-interactive --no-auth-cache --username buildbot --password bCRjzYKzk ..\\..\\sharemem\\basic\\tools'
+    os.system(command)
+
+    randName = tempfile.mktemp()
+    randName = randName[randName.rfind('\\')+1:]
+    for item in range(0,10000):
+        if os.path.isfile(conf.aladdin_kvnetinstallhelper_folder + 'kvnetinstallhelper_%d.dll' % item):
+            command = 'copy /Y ' + conf.aladdin_kvnetinstallhelper_folder + 'kvnetinstallhelper_%d.dll ..\\..\\sharemem\\basic\\tools\\nsis\\plugins\\%s.dll' % (item,randName)
+            os.system(command)
+            command = 'del /Q /S ' + conf.aladdin_kvnetinstallhelper_folder + 'kvnetinstallhelper_%d.dll' % item
+            os.system(command)
+            break
+
     #change outfile to bind.exe
     nsiFile = conf.sharemem_tools_folder + 'kvnetinstall\\kvnetinstall.nsi'
     file_r = open(nsiFile)
@@ -54,6 +69,8 @@ def regenerateBind():
             lines[index] = 'OutFile "..\\..\\..\\..\\autopack\\res\\baidusd\\bind.exe"\r\n'
         if lines[index].find('VIProductVersion') != -1:
             lines[index] = 'VIProductVersion "%s"\r\n' % randomVersion()
+        if lines[index].find('KVNetInstallHelper') != -1:
+            lines[index] = lines[index].replace('KVNetInstallHelper',randName)
     file_w = open(nsiFile, "w")
     file_w .writelines(lines)
     file_w .close()
@@ -75,6 +92,17 @@ def regenerateBind():
     command = conf.sharemem_tools_folder + 'nsis\\makensis.exe ' + ' /X"SetCompressor /FINAL /SOLID lzma" ' + conf.sharemem_tools_folder + 'kvnetinstall\\kvnetinstall.nsi'
     os.system(command)
     
+    #recover nsi
+    file_r = open(nsiFile)
+    lines = file_r.readlines()
+    file_r.close()
+    for index in range(len(lines)):
+        if lines[index].find(randName) != -1:
+            lines[index] = lines[index].replace(randName,'KVNetInstallHelper')
+    file_w = open(nsiFile, "w")
+    file_w .writelines(lines)
+    file_w .close()
+
     #recover ico
     command = 'copy /Y ' + icoFile + '.bk ' + icoFile
     os.system(command)
@@ -101,10 +129,10 @@ def regenerateBind():
     sign.main(3, ['sign.py', 'bdkv', conf.baidusd_res_folder])
 
     #auto modify last byte of bind.exe
-    fp = open('..\\res\\baidusd\\bind.exe', 'r+b')
-    fp.seek(-1, os.SEEK_END)
-    fp.write(struct.pack('c', chr(random.randint(1,255))))
-    fp.close()
+    #fp = open('..\\res\\baidusd\\bind.exe', 'r+b')
+    #fp.seek(-1, os.SEEK_END)
+    #fp.write(struct.pack('c', chr(random.randint(1,255))))
+    #fp.close()
 
     #overwrite bind.xml
     md5Value = calcFileMd5(conf.baidusd_res_folder + '\\bind.exe')
@@ -746,6 +774,11 @@ def buildV1020Installer(bCopy, num, version):
     elif version == '1092':
         online_subfolder = 'online_v1092'
         tools_folder = conf.v1092_tools_folder
+        
+    #update tools folder
+    command = 'svn update --non-interactive --no-auth-cache --username buildbot --password bCRjzYKzk ' + tools_folder
+    os.system(command)
+        
     command = 'del /Q /S ..\\output\\aladdin\\installers\\' + online_subfolder + '\\*.exe'
     os.system(command)
     if bCopy:
@@ -795,7 +828,6 @@ def buildV1020Installer(bCopy, num, version):
         lines = file_r.readlines()
         file_r.close()
         randomVer = randomVersion()
-        installer = ''
         for index in range(len(lines)):
             if lines[index].find('File /oname=$PLUGINSDIR\\random.dat    			"res\\random.dat"') != -1:
                 lines[index] = '\r\n'
