@@ -356,13 +356,14 @@ def copyPackageUpdate(softid, type, subfolder):
             logging.info(command)
             os.system(command)
 
-def generateUpdateList(aladdin_update_list, type):
+def generateUpdateList(aladdin_update_list, type, subfolder):
     ctx = ''
     for item in aladdin_update_list:
         ctx += item + '\r\n'
     if ctx != '':
         clname = type.replace(';','_')
         clname += '-changelist_'
+        clname += subfolder + '_'
         clname += str(datetime.datetime.now()).replace(':','-').replace(' ','-').replace('.','_')
         clname += '.txt'
         if not os.path.isdir(conf.aladdin_update_pool_folder + 'changelist'):
@@ -738,7 +739,7 @@ def buildAladdinPackage(xmlFile, bDownload, bBuild, bindType, bForce, bAll, pack
                     copyPackageUpdate(str(softid), bindType, subfolder)
             
         #update list
-        generateUpdateList(aladdin_update_list, bindType)
+        generateUpdateList(aladdin_update_list, bindType, subfolder)
         
         if bCopy:
             #clean update pool folder
