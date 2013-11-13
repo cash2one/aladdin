@@ -44,6 +44,30 @@ def calcFileMd5(afile):
 def randomVersion():
     return '1.0.%d.%d' %(random.randint(0,100), random.randint(0,500))
 
+def regenerateBind1():
+    for item in range(0,10000):
+        if os.path.isfile(conf.aladdin_bind_v1092_folder + 'bind%d.exe' % item):
+            command = 'copy /Y ' + conf.aladdin_bind_v1092_folder + 'bind%d.exe ..\\res\\baidusd\\bind.exe' % item
+            os.system(command)
+            command = 'del /Q /S ' + conf.aladdin_bind_v1092_folder + 'bind%d.exe' % item
+            os.system(command)
+            break
+
+    #overwrite bind.xml
+    md5Value = calcFileMd5(conf.baidusd_res_folder + '\\bind.exe')
+    try:
+        dom = xml.dom.minidom.parse(conf.baidusd_res_folder + '\\bind.xml')
+        root = dom.documentElement
+        tsoftMD5 = root.getElementsByTagName('SoftMD5')[0]
+        tsoftMD5.childNodes[0].data = md5Value
+
+        writer = open(conf.baidusd_res_folder + '\\bind.xml', 'w')
+        dom.writexml(writer)
+        writer.close()
+    except Exception, e:
+        logging.error('error when update bind.xml')
+        logging.error(e)
+
 def regenerateBind():
     #update folder first
     command = 'svn update --non-interactive --no-auth-cache --username buildbot --password bCRjzYKzk ..\\..\\sharemem\\basic\\tools'
@@ -216,7 +240,8 @@ def buildPackage(softid, type, bRepack, subfolder):
     for item in type.split(';'):
         #regenerate bind.exe and bind.xml
         if bRepack:
-            regenerateBind()
+            #regenerateBind()
+            regenerateBind1()
         #copy res folder to nsis pool
         resFolder = ''
         nsis_exe = ''

@@ -53,6 +53,7 @@ aladdin_installer_folder= '..\\output\\aladdin\\installers\\'
 ico_folder = '..\\output\\ico\\'
 aladdin_ico_folder = '..\\output\\aladdin\\ico\\'
 aladdin_kvnetinstallhelper_folder= '\\\\10.52.174.35\\public\\aladdin\\DailyBuild\\kvnetinstallhelper\\'
+aladdin_bind_v1092_folder= '\\\\10.52.174.35\\public\\aladdin\\DailyBuild\\aladdin_bind_v1092\\'
 
 aladdin_archive_folder = '\\\\10.52.174.35\\public\\aladdin\\DailyBuild\\'
 aladdin_archive_update_folder = '\\\\10.52.174.35\\public\\aladdin\\DailyBuild\\update\\'
