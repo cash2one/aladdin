@@ -398,7 +398,7 @@ def copyPackageToArchiveFolder(aladdin_update_list, type, bRemoveOld, subfolder)
     logging.info(command)
     os.system(command)
     
-def buildAladdinPackage(xmlFile, bDownload, bBuild, bindType, bForce, bAll, packInfoFile, o_softId, bCopy, o_xsoftId, xpackInfoFile, bNoBuild, bNoCopyToUpdate, bRemoveOld, bRepack, subfolder):
+def buildAladdinPackage(xmlFile, bDownload, bBuild, bindType, bForce, bAll, packInfoFile, o_softId, bCopy, o_xsoftId, xpackInfoFile, bNoBuild, bNoCopyToUpdate, bRemoveOld, bRepack, subfolder, bNoUpdate):
     bCleanArchive = False
     
     #always clean update pool folder
@@ -682,22 +682,23 @@ def buildAladdinPackage(xmlFile, bDownload, bBuild, bindType, bForce, bAll, pack
             #if bUpdate, do some real work
             if bUpdate:
                 
-                #always download when bUpdate
-                #soft
-                command = conf.wget_exe + ' ' + downloadLink + ' -O ' + conf.aladdin_package_folder + softid + '\\' + filename
-                os.system(command.encode(sys.getfilesystemencoding()))
-                #ico
-                command = conf.wget_exe + ' ' + iconAddr + ' -O ' + conf.aladdin_package_folder + softid + '\\' + softid + '.png'
-                os.system(command.encode(sys.getfilesystemencoding()))
-                #softmd5
-                tsoftMD5.childNodes[0].data = calcFileMd5(conf.aladdin_package_folder + softid + '\\' + filename)
-                #icomd5
-                tlogoMD5.childNodes[0].data = calcFileMd5(conf.aladdin_package_folder + softid + '\\' + softid + '.png')
-                
-                #save to xml
-                writer = open(taskxml_file, 'w')
-                tdom.writexml(writer)
-                writer.close()
+                if not bNoUpdate:
+                    #always download when bUpdate
+                    #soft
+                    command = conf.wget_exe + ' ' + downloadLink + ' -O ' + conf.aladdin_package_folder + softid + '\\' + filename
+                    os.system(command.encode(sys.getfilesystemencoding()))
+                    #ico
+                    command = conf.wget_exe + ' ' + iconAddr + ' -O ' + conf.aladdin_package_folder + softid + '\\' + softid + '.png'
+                    os.system(command.encode(sys.getfilesystemencoding()))
+                    #softmd5
+                    tsoftMD5.childNodes[0].data = calcFileMd5(conf.aladdin_package_folder + softid + '\\' + filename)
+                    #icomd5
+                    tlogoMD5.childNodes[0].data = calcFileMd5(conf.aladdin_package_folder + softid + '\\' + softid + '.png')
+                    
+                    #save to xml
+                    writer = open(taskxml_file, 'w')
+                    tdom.writexml(writer)
+                    writer.close()
 
                 #always build when bUpdate
                 if not bNoBuild:
@@ -716,12 +717,13 @@ def buildAladdinPackage(xmlFile, bDownload, bBuild, bindType, bForce, bAll, pack
                 
             #if bDownload is set, also download soft、ico
             if bDownload and not bUpdate:
-                #soft
-                command = conf.wget_exe + ' ' + downloadLink + ' -O ' + conf.aladdin_package_folder + softid + '\\' + filename
-                os.system(command.encode(sys.getfilesystemencoding()))
-                #ico
-                command = conf.wget_exe + ' ' + iconAddr + ' -O ' + conf.aladdin_package_folder + softid + '\\' + softid + '.png'
-                os.system(command.encode(sys.getfilesystemencoding()))
+                if not bNoUpdate:
+                    #soft
+                    command = conf.wget_exe + ' ' + downloadLink + ' -O ' + conf.aladdin_package_folder + softid + '\\' + filename
+                    os.system(command.encode(sys.getfilesystemencoding()))
+                    #ico
+                    command = conf.wget_exe + ' ' + iconAddr + ' -O ' + conf.aladdin_package_folder + softid + '\\' + softid + '.png'
+                    os.system(command.encode(sys.getfilesystemencoding()))
             
             #build specific package
             if bBuild and not (bUpdate and not bNoBuild):
@@ -887,6 +889,7 @@ def main(argc, argv):
     parser.add_argument('-r', '--repack', action='store_true', default=False, dest='bRepack', help='repack bind.exe')
     parser.add_argument('-v', '--repackVersion', action='store', default='1020', dest='repackVersion', help='repack version')
     parser.add_argument('-g', '--archive-subfolder', action='store', default='bind1', dest='archiveSubfolder', help='archive subfolder')
+    parser.add_argument('-N', '--no-update', action='store_true', default=False, dest='bNoUpdate', help='not update original package')
 
 
     args = parser.parse_args()
@@ -910,12 +913,13 @@ def main(argc, argv):
     logging.info('repack bind.exe : ' + str(args.bRepack))
     logging.info('repack version : ' + args.repackVersion)
     logging.info('archive subfolder : ' + args.archiveSubfolder)
+    logging.info('no-update : ' + str(args.bNoUpdate))
     logging.info('-----------------------------------------')
     
     if args.bInstaller1020:
         buildV1020Installer(args.bCopy, args.numInstallers, args.repackVersion)
     
-    buildAladdinPackage(args.xmlFile, args.bDownload, args.bBuild, args.bindType, args.bForce, args.bAll, args.packInfoFile, args.softId, args.bCopy, args.xsoftId, args.xpackInfoFile, args.bNoBuild, args.bCopyUpdate, args.bRemoveOldPkg, args.bRepack, args.archiveSubfolder)
+    buildAladdinPackage(args.xmlFile, args.bDownload, args.bBuild, args.bindType, args.bForce, args.bAll, args.packInfoFile, args.softId, args.bCopy, args.xsoftId, args.xpackInfoFile, args.bNoBuild, args.bCopyUpdate, args.bRemoveOldPkg, args.bRepack, args.archiveSubfolder, args.bNoUpdate)
 
 if "__main__" == __name__:
     sys.exit(main(len(sys.argv),sys.argv))

@@ -31,26 +31,26 @@ class AladdinEventHandler(FileSystemEventHandler):
                 logging.info('start building aladdin installers')
                 
                 #top20 bind1 always build, using full xml
-                aladdin.buildAladdinPackage(xmlFile=conf.aladdin_xml_full, bDownload=False, bBuild=True, bindType='baidusd', bForce=False, bAll=False, packInfoFile=conf.baidusd_packinfo_file, o_softId='', bCopy=True, o_xsoftId='', xpackInfoFile='', bNoBuild=False, bNoCopyToUpdate=False, bRemoveOld=True, bRepack=True, subfolder='bind1')
+                aladdin.buildAladdinPackage(xmlFile=conf.aladdin_xml_full, bDownload=False, bBuild=True, bindType='baidusd', bForce=False, bAll=False, packInfoFile=conf.baidusd_packinfo_file, o_softId='', bCopy=True, o_xsoftId='', xpackInfoFile='', bNoBuild=False, bNoCopyToUpdate=False, bRemoveOld=True, bRepack=True, subfolder='bind1', bNoUpdate=False)
                 
                 #top20 bind1 always build, using daily xml
-                aladdin.buildAladdinPackage(xmlFile=conf.aladdin_xml_daily, bDownload=False, bBuild=True, bindType='baidusd', bForce=False, bAll=False, packInfoFile=conf.baidusd_packinfo_file, o_softId='', bCopy=True, o_xsoftId='', xpackInfoFile='', bNoBuild=False, bNoCopyToUpdate=False, bRemoveOld=True, bRepack=True, subfolder='bind1')
+                aladdin.buildAladdinPackage(xmlFile=conf.aladdin_xml_daily, bDownload=False, bBuild=True, bindType='baidusd', bForce=False, bAll=False, packInfoFile=conf.baidusd_packinfo_file, o_softId='', bCopy=True, o_xsoftId='', xpackInfoFile='', bNoBuild=False, bNoCopyToUpdate=False, bRemoveOld=True, bRepack=True, subfolder='bind1', bNoUpdate=False)
                 
                 ############################################################################################################################
                 
                 #top20 unbind update build, using full xml
-                aladdin.buildAladdinPackage(xmlFile=conf.aladdin_xml_full, bDownload=False, bBuild=False, bindType='baidusd_nobind', bForce=False, bAll=False, packInfoFile=conf.baidusd_packinfo_file, o_softId='', bCopy=True, o_xsoftId='', xpackInfoFile='', bNoBuild=False, bNoCopyToUpdate=False, bRemoveOld=True, bRepack=True, subfolder='bind1')
+                aladdin.buildAladdinPackage(xmlFile=conf.aladdin_xml_full, bDownload=False, bBuild=False, bindType='baidusd_nobind', bForce=False, bAll=False, packInfoFile=conf.baidusd_packinfo_file, o_softId='', bCopy=True, o_xsoftId='', xpackInfoFile='', bNoBuild=False, bNoCopyToUpdate=False, bRemoveOld=True, bRepack=True, subfolder='bind1', bNoUpdate=False)
                 
                 #top20 unbind update build, using daily xml
-                aladdin.buildAladdinPackage(xmlFile=conf.aladdin_xml_daily, bDownload=False, bBuild=False, bindType='baidusd_nobind', bForce=False, bAll=False, packInfoFile=conf.baidusd_packinfo_file, o_softId='', bCopy=True, o_xsoftId='', xpackInfoFile='', bNoBuild=False, bNoCopyToUpdate=False, bRemoveOld=True, bRepack=True, subfolder='bind1')
+                aladdin.buildAladdinPackage(xmlFile=conf.aladdin_xml_daily, bDownload=False, bBuild=False, bindType='baidusd_nobind', bForce=False, bAll=False, packInfoFile=conf.baidusd_packinfo_file, o_softId='', bCopy=True, o_xsoftId='', xpackInfoFile='', bNoBuild=False, bNoCopyToUpdate=False, bRemoveOld=True, bRepack=True, subfolder='bind1', bNoUpdate=False)
                 
                 ############################################################################################################################
                 
                 #top20-80 unbind update build, using full xml
-                aladdin.buildAladdinPackage(xmlFile=conf.aladdin_xml_full, bDownload=False, bBuild=False, bindType='baidusd_nobind', bForce=False, bAll=False, packInfoFile=conf.baidusd_packinfo_20_80_file, o_softId='', bCopy=True, o_xsoftId='', xpackInfoFile=conf.baidusd_packinfo_20_80_excluded_file, bNoBuild=False, bNoCopyToUpdate=False, bRemoveOld=True, bRepack=True, subfolder='bind1')
+                aladdin.buildAladdinPackage(xmlFile=conf.aladdin_xml_full, bDownload=False, bBuild=False, bindType='baidusd_nobind', bForce=False, bAll=False, packInfoFile=conf.baidusd_packinfo_20_80_file, o_softId='', bCopy=True, o_xsoftId='', xpackInfoFile=conf.baidusd_packinfo_20_80_excluded_file, bNoBuild=False, bNoCopyToUpdate=False, bRemoveOld=True, bRepack=True, subfolder='bind1', bNoUpdate=False)
                 
                 #top20-80 unbind update build, using daily xml
-                aladdin.buildAladdinPackage(xmlFile=conf.aladdin_xml_daily, bDownload=False, bBuild=False, bindType='baidusd_nobind', bForce=False, bAll=False, packInfoFile=conf.baidusd_packinfo_20_80_file, o_softId='', bCopy=True, o_xsoftId='', xpackInfoFile=conf.baidusd_packinfo_20_80_excluded_file, bNoBuild=False, bNoCopyToUpdate=False, bRemoveOld=True, bRepack=True, subfolder='bind1')
+                aladdin.buildAladdinPackage(xmlFile=conf.aladdin_xml_daily, bDownload=False, bBuild=False, bindType='baidusd_nobind', bForce=False, bAll=False, packInfoFile=conf.baidusd_packinfo_20_80_file, o_softId='', bCopy=True, o_xsoftId='', xpackInfoFile=conf.baidusd_packinfo_20_80_excluded_file, bNoBuild=False, bNoCopyToUpdate=False, bRemoveOld=True, bRepack=True, subfolder='bind1', bNoUpdate=False)
                 
                 logging.info('-----------------------------------------')
                 logging.info('build complete')
