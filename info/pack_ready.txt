@@ -1,1 +1,1 @@
-i am ready
+[Errno 13] Permission denied: '..\\info\\pack_today_1.xml'
