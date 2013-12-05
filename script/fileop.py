@@ -280,7 +280,7 @@ def SignBaidu(file,para):
             f = open('c:\\sign_output.txt','a')
             f.write("file sign baidu failed %s\r\n" % file)
             f.close()
-            raise SignBaiduException('Sign baidu official digital signature failed.')
+            #raise SignBaiduException('Sign baidu official digital signature failed.')
     return
 
 def SignBaidu2(file,para):
@@ -340,7 +340,7 @@ def SignBaidu2(file,para):
             f = open('c:\\sign_output.txt','a')
             f.write("file sign baidu failed %s\r\n" % file)
             f.close()
-            raise SignBaiduException('Sign baidu official digital signature failed.')
+            #raise SignBaiduException('Sign baidu official digital signature failed.')
     return
 
 def SignBaiduOfficial(path,ftype,product,excluded_dir = []):
@@ -785,7 +785,7 @@ gen_rc_list                           - generate rc list
         return
 
     #init logging system, it's told logging is threadsafe, so do NOT need to sync
-    logging.basicconfig(format = '%(asctime)s - %(levelname)s: %(message)s', level=logging.DEBUG, stream = sys.stdout)
+    #logging.basicconfig(format = '%(asctime)s - %(levelname)s: %(message)s', level=logging.DEBUG, stream = sys.stdout)
 
     argv[2] = argv[2].strip('"')
     if argv[2][-1] != '\\':

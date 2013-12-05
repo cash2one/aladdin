@@ -25,6 +25,7 @@ import codecs
 import random
 import struct
 import tempfile
+import fileop
 
 class SoftIDError(Exception):
     def __str__(self):
@@ -327,8 +328,10 @@ def buildPackage(softid, type, bRepack, subfolder):
 def signPackage(softid, type, subfolder):
     for item in type.split(';'):
         if item.lower() == 'baidusd_nobind' or item.lower() == 'qqmgr_nobind':
+            fileop.main(4, ['fileop.py', 'kvsign',  conf.aladdin_installer_folder + 'unbind\\' + softid + '\\', '*.exe'])
             sign.main(3, ['sign.py', 'bdkv', conf.aladdin_installer_folder + 'unbind\\' + softid + '\\'])
         elif item.lower() == 'baidusd' or item.lower() == 'qqmgr':
+            fileop.main(4, ['fileop.py', 'kvsign',  conf.aladdin_installer_folder + subfolder + '\\' + softid + '\\', '*.exe'])
             sign.main(3, ['sign.py', 'bdkv', conf.aladdin_installer_folder + subfolder + '\\' + softid + '\\'])
     
 def renamePackage(softid, type, subfolder):

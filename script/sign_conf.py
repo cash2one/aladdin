@@ -28,7 +28,7 @@ cerf_addr='sign.baidu.com'
 #cerf_addr='m1-scm-git03.m1.baidu.com:8008'
 cerf_login_server='uuap.baidu.com'
 
-local_cerf_addr = 'qa1.basic.baidu.com:8000'
+local_cerf_addr = 'cms.iyuntian.com:8000'
 local_cerf_url = '/zpadmin/api/monitor/json_get_sig_by_sig_baidu_com/liuheng/1qaz@WSX'
 
 sign_file_exts='*.exe,*.dll'
